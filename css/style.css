@@ -1,0 +1,191 @@
+:root{
+  --ink:#100e18;
+  --ink-2:#17131f;
+  --paper:#f4f0ff;
+  --paper-dim:#c7bfe0;
+  --magenta:#ff3d81;
+  --gold:#ffd23f;
+  --cyan:#3ee6c4;
+  --violet:#8a5cff;
+  --border:rgba(244,240,255,0.14);
+  --radius:22px;
+  --font-display:"Bungee", system-ui, sans-serif;
+  --font-body:"Manrope", system-ui, sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(138,92,255,0.35), transparent 45%),
+    radial-gradient(circle at 85% 0%, rgba(62,230,196,0.18), transparent 40%),
+    var(--ink);
+  color:var(--paper);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  position:relative;
+}
+
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;}
+
+.noise-overlay{
+  position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.glow{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;opacity:0.5;}
+.glow-a{width:420px;height:420px;background:var(--magenta);top:-120px;left:-100px;animation:drift 14s ease-in-out infinite;}
+.glow-b{width:360px;height:360px;background:var(--cyan);bottom:-140px;right:-80px;animation:drift 18s ease-in-out infinite reverse;}
+.glow-c{width:300px;height:300px;background:var(--gold);top:40%;left:60%;opacity:0.25;animation:drift 22s ease-in-out infinite;}
+
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(30px,-20px) scale(1.08);}
+}
+
+/* ---------- Home ---------- */
+.home{
+  position:relative;z-index:2;
+  max-width:1100px;margin:0 auto;
+  padding:clamp(2rem,6vw,5rem) 1.5rem 3rem;
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;
+}
+
+.home-header{text-align:center;margin-bottom:clamp(2.5rem,6vw,4rem);}
+
+.badge{
+  display:inline-block;
+  font-size:0.7rem;letter-spacing:0.14em;font-weight:800;
+  color:var(--gold);
+  border:1px solid rgba(255,210,63,0.4);
+  background:rgba(255,210,63,0.08);
+  padding:0.45em 1em;border-radius:999px;
+  margin-bottom:1.5rem;
+  animation:fadeUp 0.7s ease both;
+}
+
+.home-title{
+  font-family:var(--font-display);
+  font-size:clamp(3.2rem,12vw,7rem);
+  line-height:0.92;
+  margin:0 0 1.1rem;
+  letter-spacing:0.01em;
+}
+.home-title .line{display:block;}
+.line-1{
+  color:var(--paper);
+  animation:fadeUp 0.7s ease 0.05s both;
+}
+.line-2{
+  background:linear-gradient(100deg,var(--magenta),var(--gold) 55%,var(--cyan));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:fadeUp 0.7s ease 0.15s both;
+}
+
+.home-tagline{
+  font-size:clamp(1rem,2.2vw,1.25rem);
+  color:var(--paper-dim);
+  max-width:520px;margin:0 auto;
+  font-weight:500;
+  animation:fadeUp 0.7s ease 0.25s both;
+}
+
+.game-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:1.75rem;
+  width:100%;
+  animation:fadeUp 0.8s ease 0.35s both;
+}
+
+.game-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  padding:2.4rem 2rem 2.2rem;
+  display:flex;flex-direction:column;align-items:flex-start;
+  min-height:300px;
+  transition:transform 0.35s cubic-bezier(.2,.8,.2,1), border-color 0.35s;
+  background:var(--ink-2);
+}
+
+.game-card:hover, .game-card:focus-visible{
+  transform:translateY(-8px) rotate(-0.3deg);
+}
+
+.card-glow{
+  position:absolute;inset:-40%;
+  opacity:0;transition:opacity 0.4s;
+  pointer-events:none;
+}
+.game-card:hover .card-glow{opacity:1;}
+
+.card-spy{background:linear-gradient(160deg,#1a1420 0%,#120e18 70%);}
+.card-spy:hover{border-color:rgba(255,61,129,0.55);box-shadow:0 20px 60px -20px rgba(255,61,129,0.4);}
+.card-spy .card-glow{background:radial-gradient(circle at 30% 20%, rgba(255,61,129,0.35), transparent 60%);}
+.card-spy .card-kicker{color:var(--magenta);}
+
+.card-quiz{background:linear-gradient(160deg,#141a22 0%,#0f141a 70%);}
+.card-quiz:hover{border-color:rgba(255,210,63,0.55);box-shadow:0 20px 60px -20px rgba(255,210,63,0.35);}
+.card-quiz .card-glow{background:radial-gradient(circle at 75% 15%, rgba(255,210,63,0.3), transparent 60%);}
+.card-quiz .card-kicker{color:var(--gold);}
+
+.card-kicker{
+  font-size:0.68rem;font-weight:800;letter-spacing:0.12em;
+  position:relative;z-index:2;
+}
+.card-icon{font-size:2.6rem;margin:0.9rem 0 0.5rem;position:relative;z-index:2;filter:drop-shadow(0 6px 18px rgba(0,0,0,0.4));}
+.card-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.7rem,3.4vw,2.3rem);
+  margin:0 0 0.6rem;
+  position:relative;z-index:2;
+}
+.card-desc{
+  color:var(--paper-dim);
+  font-size:0.98rem;line-height:1.5;
+  margin:0 0 1.6rem;
+  position:relative;z-index:2;
+  max-width:38ch;
+}
+.card-cta{
+  margin-top:auto;
+  font-weight:800;font-size:0.95rem;
+  display:inline-flex;align-items:center;gap:0.4em;
+  position:relative;z-index:2;
+}
+.card-spy .card-cta{color:var(--magenta);}
+.card-quiz .card-cta{color:var(--gold);}
+.arrow{transition:transform 0.3s;}
+.game-card:hover .arrow{transform:translateX(6px);}
+
+.card-deco{position:absolute;pointer-events:none;z-index:1;}
+.spy-scanline{
+  inset:0;
+  background:repeating-linear-gradient(180deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 3px);
+}
+.quiz-shine{
+  top:-60%;right:-30%;width:70%;height:220%;
+  background:linear-gradient(100deg, transparent 40%, rgba(255,210,63,0.08) 50%, transparent 60%);
+  transform:rotate(15deg);
+}
+
+.home-footer{
+  margin-top:clamp(2.5rem,6vw,4rem);
+  font-size:0.8rem;color:var(--paper-dim);
+  opacity:0.7;letter-spacing:0.02em;
+  animation:fadeUp 0.9s ease 0.45s both;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+@media (max-width:520px){
+  .badge{font-size:0.62rem;}
+}
