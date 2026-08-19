@@ -146,6 +146,40 @@ button{font-family:inherit;border:none;cursor:pointer;}
 }
 .name-input:focus{outline:none;border-color:var(--crimson);}
 
+/* How to Play */
+.how-to-play{
+  margin:0 0 2rem;
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;
+  padding:1rem 1.3rem;
+}
+.how-to-play summary{
+  cursor:pointer;font-weight:800;font-size:0.92rem;color:var(--gold);
+  list-style:none;
+}
+.how-to-play summary::-webkit-details-marker{display:none;}
+.how-to-play summary::after{content:" ▸";}
+.how-to-play[open] summary::after{content:" ▾";}
+.how-to-play ol{
+  margin:0.9rem 0 0.2rem;padding-left:1.2rem;
+  color:var(--paper-dim);font-size:0.88rem;line-height:1.7;
+}
+
+/* Timer toggle */
+.timer-toggle{
+  display:flex;align-items:center;gap:0.6rem;
+  font-size:0.9rem;font-weight:700;color:var(--paper);
+  cursor:pointer;
+}
+.timer-toggle input{width:18px;height:18px;accent-color:var(--crimson);cursor:pointer;}
+
+/* Discussion timer */
+.discuss-timer{
+  text-align:center;font-weight:700;font-size:0.95rem;
+  color:var(--gold);margin:-1rem 0 1.6rem;
+}
+.btn-urgent{animation:pulseUrgent 1s ease infinite;}
+@keyframes pulseUrgent{0%,100%{transform:scale(1);}50%{transform:scale(1.03);}}
+
 .btn-primary{
   display:block;width:100%;
   background:linear-gradient(120deg, var(--crimson), #ff5a72);

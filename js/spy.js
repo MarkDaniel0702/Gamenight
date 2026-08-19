@@ -3,6 +3,7 @@
 
   const MIN_PLAYERS = 3;
   const MAX_PLAYERS = 10;
+  const DISCUSSION_SECONDS = 90;
 
   const state = {
     theme: null,
@@ -12,7 +13,9 @@
     mainWord: "",
     spyWord: "",
     spyIndex: -1,
-    revealIndex: 0
+    revealIndex: 0,
+    timerEnabled: true,
+    timerHandle: null
   };
 
   const screens = {
@@ -156,7 +159,10 @@
     state.revealIndex = 0;
   }
 
+  const timerToggle = document.getElementById("timer-toggle");
+
   btnStart.addEventListener("click", () => {
+    state.timerEnabled = timerToggle.checked;
     dealWords();
     showScreen("pass");
     renderPass();
@@ -207,6 +213,7 @@
     state.revealIndex++;
     if (state.revealIndex >= state.words.length) {
       showScreen("discuss");
+      startDiscussionTimer();
     } else {
       renderPass();
       showScreen("pass");
@@ -219,8 +226,40 @@
   const spyWordReveal = document.getElementById("spy-word-reveal");
   const btnPlayAgain = document.getElementById("btn-play-again");
   const btnNewGame = document.getElementById("btn-new-game");
+  const discussTimerEl = document.getElementById("discuss-timer");
+  const discussTimerValueEl = document.getElementById("discuss-timer-value");
+
+  function stopDiscussionTimer() {
+    if (state.timerHandle) {
+      clearInterval(state.timerHandle);
+      state.timerHandle = null;
+    }
+    btnRevealSpy.classList.remove("btn-urgent");
+  }
+
+  function startDiscussionTimer() {
+    stopDiscussionTimer();
+    if (!state.timerEnabled) {
+      discussTimerEl.classList.add("hidden");
+      return;
+    }
+    let secondsLeft = DISCUSSION_SECONDS;
+    discussTimerEl.classList.remove("hidden");
+    discussTimerValueEl.textContent = secondsLeft;
+    state.timerHandle = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) {
+        stopDiscussionTimer();
+        discussTimerEl.textContent = "⏰ Time's up! Ready to vote?";
+        btnRevealSpy.classList.add("btn-urgent");
+        return;
+      }
+      discussTimerValueEl.textContent = secondsLeft;
+    }, 1000);
+  }
 
   btnRevealSpy.addEventListener("click", () => {
+    stopDiscussionTimer();
     const spy = state.words[state.spyIndex];
     spyNameEl.textContent = spy.name;
     spyWordReveal.innerHTML = `The real word was <strong>${state.mainWord}</strong>. The Spy had <strong>${state.spyWord}</strong>.`;

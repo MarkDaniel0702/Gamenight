@@ -24,7 +24,18 @@
   <!-- SETUP -->
   <section id="screen-setup" class="screen active">
     <h1 class="screen-title">Build the Board</h1>
-    <p class="screen-sub">Pick a theme and set up your teams to get started.</p>
+    <p class="screen-sub">Pick a theme and set up your teams to get started. No dedicated host needed &mdash; everyone plays from the same screen.</p>
+
+    <details class="how-to-play">
+      <summary>❓ How does this work?</summary>
+      <ol>
+        <li>Pick a theme and add your teams below, then tap <strong>Start Quiz</strong>.</li>
+        <li>Whoever's turn it is calls out a category and point value shown in the turn banner, and taps that tile.</li>
+        <li>Read the question out loud. The answer stays hidden until someone taps <strong>Show Answer</strong> &mdash; or the timer runs out in Automated mode.</li>
+        <li>Any team can tap their own <strong>+points</strong> button once they've answered correctly.</li>
+        <li>The turn passes automatically to the next team. When the board is empty, the final results appear on their own.</li>
+      </ol>
+    </details>
 
     <div class="block block-wide">
       <h2 class="block-label">1. Choose a theme</h2>
@@ -37,12 +48,18 @@
       <button type="button" id="btn-add-team" class="btn-add-team">+ Add Team</button>
     </div>
 
+    <div class="block">
+      <h2 class="block-label">3. Play style</h2>
+      <div id="mode-grid" class="mode-grid"></div>
+    </div>
+
     <button type="button" id="btn-start" class="btn-primary" disabled>Start Quiz &rarr;</button>
   </section>
 
   <!-- BOARD -->
   <section id="screen-board" class="screen">
     <div class="scoreboard" id="scoreboard"></div>
+    <p id="turn-banner" class="turn-banner"></p>
     <p id="scroll-hint" class="scroll-hint hidden">Scroll sideways to see all categories &rarr;</p>
     <div class="board-scroll">
       <div id="board" class="board"></div>
@@ -53,12 +70,25 @@
     </div>
   </section>
 
+  <!-- RESULTS -->
+  <section id="screen-results" class="screen">
+    <span class="big-icon">🏁</span>
+    <h1 class="screen-title">Board Complete!</h1>
+    <p class="screen-sub">Here's how everyone finished.</p>
+    <div id="results-list" class="results-list"></div>
+    <div class="btn-row">
+      <button type="button" id="btn-results-again" class="btn-primary">Play Again</button>
+      <button type="button" id="btn-results-new" class="btn-secondary">New Quiz</button>
+    </div>
+  </section>
+
 </main>
 
 <!-- QUESTION OVERLAY -->
 <div id="overlay" class="overlay">
   <div class="question-card">
     <span class="q-meta" id="q-meta">Category &middot; 100</span>
+    <span id="q-timer" class="q-timer hidden">⏱️ 20s</span>
     <p class="q-text" id="q-text">Question text goes here?</p>
     <div id="answer-block" class="answer-block hidden">
       <span class="a-label">Answer</span>

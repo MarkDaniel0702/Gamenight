@@ -25,7 +25,18 @@
   <!-- SETUP -->
   <section id="screen-setup" class="screen active">
     <h1 class="screen-title">Set Up the Round</h1>
-    <p class="screen-sub">Choose a theme, add your players, and pass the device around.</p>
+    <p class="screen-sub">Choose a theme, add your players, and pass the device around. No dedicated host needed &mdash; whoever's holding the phone just taps through their own turn.</p>
+
+    <details class="how-to-play">
+      <summary>❓ How does this work?</summary>
+      <ol>
+        <li>Pick a theme and player count below, then tap <strong>Deal the Words</strong>.</li>
+        <li>The device gets passed around &mdash; each player privately taps to reveal their word, then hides it before passing it on.</li>
+        <li>Almost everyone gets the same word. One random player &mdash; the Spy &mdash; gets a different, related word.</li>
+        <li>Once everyone's seen their word, the group discusses out loud and tries to spot who's bluffing.</li>
+        <li>Anyone can tap <strong>Reveal the Spy</strong> when the group is ready to vote.</li>
+      </ol>
+    </details>
 
     <div class="block">
       <h2 class="block-label">1. Choose a theme</h2>
@@ -45,6 +56,13 @@
     <div class="block">
       <h2 class="block-label">3. Name your players <span class="optional">(optional)</span></h2>
       <div id="names-grid" class="names-grid"></div>
+    </div>
+
+    <div class="block">
+      <label class="timer-toggle">
+        <input type="checkbox" id="timer-toggle" checked>
+        <span>⏱️ Add a 90-second discussion timer</span>
+      </label>
     </div>
 
     <button type="button" id="btn-start" class="btn-primary" disabled>Deal the Words &rarr;</button>
@@ -77,6 +95,7 @@
     <span class="big-icon">🗣️</span>
     <h1 class="screen-title">Everyone Has Their Word</h1>
     <p class="screen-sub">Take turns describing your word without saying it. Discuss and vote &mdash; who sounds like they don't actually know it?</p>
+    <p id="discuss-timer" class="discuss-timer hidden">⏱️ <span id="discuss-timer-value">90</span>s left to discuss</p>
     <button type="button" id="btn-reveal-spy" class="btn-primary">Reveal the Spy</button>
   </section>
 

@@ -4,17 +4,22 @@
   const TEAM_COLORS = ["#ffcb3c", "#31e0c9", "#ff6b81", "#9b8bff", "#7dd956", "#ff9f4a"];
   const MAX_TEAMS = 6;
   const POINT_VALUES = [100, 200, 300, 400, 500];
+  const ANSWER_TIMER_SECONDS = 20;
 
   const state = {
     theme: null,
     teams: [], // { name, score, color }
     answered: new Set(), // "categoryIndex-points"
-    current: null // { catIndex, points, category, question }
+    current: null, // { catIndex, points, category, question }
+    mode: "automated", // "automated" (auto turn order + timer) or "gamemaster" (manual pacing)
+    turnIndex: 0,
+    timerHandle: null
   };
 
   const screens = {
     setup: document.getElementById("screen-setup"),
-    board: document.getElementById("screen-board")
+    board: document.getElementById("screen-board"),
+    results: document.getElementById("screen-results")
   };
 
   function showScreen(name) {
@@ -124,8 +129,33 @@
     btnStart.disabled = !state.theme || state.teams.length < 1;
   }
 
+  // ---------- Setup: play style (host-optional) ----------
+  const modeGrid = document.getElementById("mode-grid");
+  const MODES = [
+    { id: "automated", icon: "🤖", name: "Automated", desc: "Turn order and a 20-second answer timer run automatically — everyone just plays." },
+    { id: "gamemaster", icon: "🎙️", name: "Game Master", desc: "One person controls the pace manually — no timer, reveal answers whenever ready." }
+  ];
+
+  function renderModeGrid() {
+    modeGrid.innerHTML = "";
+    MODES.forEach((m) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "theme-btn mode-btn";
+      if (m.id === state.mode) btn.classList.add("selected");
+      btn.innerHTML = `<span class="t-icon">${m.icon}</span><span class="t-name">${m.name}</span><span class="t-cats">${m.desc}</span>`;
+      btn.addEventListener("click", () => {
+        state.mode = m.id;
+        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      });
+      modeGrid.appendChild(btn);
+    });
+  }
+
   btnStart.addEventListener("click", () => {
     state.answered = new Set();
+    state.turnIndex = 0;
     renderScoreboard();
     renderBoard();
     showScreen("board");
@@ -135,6 +165,28 @@
   const scoreboardEl = document.getElementById("scoreboard");
   const boardEl = document.getElementById("board");
   const scrollHintEl = document.getElementById("scroll-hint");
+  const turnBannerEl = document.getElementById("turn-banner");
+
+  function updateTurnBanner() {
+    if (state.teams.length <= 1) {
+      turnBannerEl.classList.add("hidden");
+      return;
+    }
+    const team = state.teams[state.turnIndex];
+    turnBannerEl.innerHTML = `🎯 <span style="color:${team.color}">${team.name}</span>'s turn to pick a category!`;
+    turnBannerEl.classList.remove("hidden");
+  }
+
+  function advanceTurn() {
+    if (state.teams.length > 1) {
+      state.turnIndex = (state.turnIndex + 1) % state.teams.length;
+    }
+  }
+
+  function totalTileCount() {
+    const theme = QUIZ_THEMES[state.theme];
+    return theme.categories.length * POINT_VALUES.length;
+  }
 
   function renderScoreboard() {
     scoreboardEl.innerHTML = "";
@@ -167,6 +219,7 @@
     boardEl.style.setProperty("--cols", theme.categories.length);
     boardEl.innerHTML = "";
     scrollHintEl.classList.toggle("hidden", theme.categories.length <= 5);
+    updateTurnBanner();
 
     theme.categories.forEach((cat) => {
       const header = document.createElement("div");
@@ -192,12 +245,42 @@
   // ---------- Question overlay ----------
   const overlay = document.getElementById("overlay");
   const qMeta = document.getElementById("q-meta");
+  const qTimerEl = document.getElementById("q-timer");
   const qText = document.getElementById("q-text");
   const answerBlock = document.getElementById("answer-block");
   const aText = document.getElementById("a-text");
   const btnShowAnswer = document.getElementById("btn-show-answer");
   const awardRow = document.getElementById("award-row");
   const btnBackBoard = document.getElementById("btn-back-board");
+
+  function stopTimer() {
+    if (state.timerHandle) {
+      clearInterval(state.timerHandle);
+      state.timerHandle = null;
+    }
+  }
+
+  function startAnswerTimer() {
+    stopTimer();
+    if (state.mode !== "automated") {
+      qTimerEl.classList.add("hidden");
+      return;
+    }
+    let secondsLeft = ANSWER_TIMER_SECONDS;
+    qTimerEl.classList.remove("hidden");
+    qTimerEl.classList.remove("q-timer-urgent");
+    qTimerEl.textContent = `⏱️ ${secondsLeft}s`;
+    state.timerHandle = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 5) qTimerEl.classList.add("q-timer-urgent");
+      if (secondsLeft <= 0) {
+        stopTimer();
+        revealAnswer();
+        return;
+      }
+      qTimerEl.textContent = `⏱️ ${secondsLeft}s`;
+    }, 1000);
+  }
 
   function openQuestion(catIndex, points) {
     const theme = QUIZ_THEMES[state.theme];
@@ -219,9 +302,12 @@
     btnShowAnswer.classList.remove("hidden");
 
     overlay.classList.add("active");
+    startAnswerTimer();
   }
 
-  btnShowAnswer.addEventListener("click", () => {
+  function revealAnswer() {
+    stopTimer();
+    qTimerEl.classList.add("hidden");
     answerBlock.classList.remove("hidden");
     btnShowAnswer.classList.add("hidden");
     awardRow.classList.remove("hidden");
@@ -237,39 +323,92 @@
         team.score += state.current.points;
         renderScoreboard();
         closeOverlay();
+        afterQuestionClosed();
       });
       awardRow.appendChild(btn);
     });
+  }
+
+  btnShowAnswer.addEventListener("click", revealAnswer);
+
+  btnBackBoard.addEventListener("click", () => {
+    closeOverlay();
+    afterQuestionClosed();
   });
 
-  btnBackBoard.addEventListener("click", closeOverlay);
-
   function closeOverlay() {
+    stopTimer();
     overlay.classList.remove("active");
     state.current = null;
   }
 
-  // ---------- Reset / New quiz ----------
-  document.getElementById("btn-reset").addEventListener("click", () => {
+  function afterQuestionClosed() {
+    advanceTurn();
+    if (state.answered.size >= totalTileCount()) {
+      showResults();
+    } else {
+      renderBoard();
+    }
+  }
+
+  // ---------- Results ----------
+  const resultsListEl = document.getElementById("results-list");
+
+  function showResults() {
+    const ranked = state.teams.slice().sort((a, b) => b.score - a.score);
+    const topScore = ranked[0] ? ranked[0].score : 0;
+    const winners = ranked.filter((t) => t.score === topScore);
+    const medals = ["🥇", "🥈", "🥉"];
+
+    resultsListEl.innerHTML = "";
+    ranked.forEach((team, i) => {
+      const row = document.createElement("div");
+      row.className = "result-row";
+      if (winners.includes(team) && state.teams.length > 1) row.classList.add("result-winner");
+      row.innerHTML = `
+        <span class="result-medal">${medals[i] || "🎗️"}</span>
+        <span class="result-swatch" style="background:${team.color}"></span>
+        <span class="result-name">${team.name}</span>
+        <span class="result-score">${team.score} pts</span>
+      `;
+      resultsListEl.appendChild(row);
+    });
+
+    showScreen("results");
+  }
+
+  function resetBoard() {
     state.answered = new Set();
+    state.turnIndex = 0;
     state.teams.forEach((t) => (t.score = 0));
     renderScoreboard();
     renderBoard();
-  });
+  }
 
-  document.getElementById("btn-new-quiz").addEventListener("click", () => {
+  function goToNewQuiz() {
     state.theme = null;
     state.teams = [];
     state.answered = new Set();
-    document.querySelectorAll(".theme-btn").forEach((b) => b.classList.remove("selected"));
+    state.turnIndex = 0;
+    document.querySelectorAll(".theme-btn:not(.mode-btn)").forEach((b) => b.classList.remove("selected"));
     addTeam("Team 1");
     addTeam("Team 2");
     validateSetup();
     showScreen("setup");
+  }
+
+  // ---------- Reset / New quiz ----------
+  document.getElementById("btn-reset").addEventListener("click", resetBoard);
+  document.getElementById("btn-new-quiz").addEventListener("click", goToNewQuiz);
+  document.getElementById("btn-results-again").addEventListener("click", () => {
+    resetBoard();
+    showScreen("board");
   });
+  document.getElementById("btn-results-new").addEventListener("click", goToNewQuiz);
 
   // ---------- init ----------
   renderThemeGrid();
+  renderModeGrid();
   addTeam("Team 1");
   addTeam("Team 2");
   validateSetup();
