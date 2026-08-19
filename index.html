@@ -19,34 +19,145 @@
 
 <main class="home">
   <header class="home-header">
-    <div class="badge">LOCAL &middot; NO SIGN-UP &middot; PASS-THE-DEVICE</div>
+    <div class="badge">LOCAL &middot; NO SIGN-UP &middot; NO HOST REQUIRED</div>
     <h1 class="home-title">
       <span class="line line-1">GAME</span>
       <span class="line line-2">NIGHT</span>
     </h1>
-    <p class="home-tagline">Pick a game. Gather your people. Somebody's about to get caught lying.</p>
+    <p class="home-tagline">11 party games. One shared screen. The app runs turns, timers, and scoring &mdash; nobody has to sit out and host.</p>
   </header>
 
-  <section class="game-grid">
-    <a class="game-card card-spy" href="spy.html">
-      <div class="card-glow"></div>
-      <span class="card-kicker">GAME 01 &mdash; SOCIAL DEDUCTION</span>
-      <span class="card-icon" aria-hidden="true">🕵️</span>
-      <h2 class="card-title">Spy Word</h2>
-      <p class="card-desc">Everyone gets the secret word. One player doesn't. Find the spy before they blend in.</p>
-      <span class="card-cta">Play Spy Word <span class="arrow">→</span></span>
-      <div class="card-deco spy-scanline"></div>
-    </a>
+  <section class="game-groups">
 
-    <a class="game-card card-quiz" href="quiz.html">
-      <div class="card-glow"></div>
-      <span class="card-kicker">GAME 02 &mdash; TRIVIA SHOWDOWN</span>
-      <span class="card-icon" aria-hidden="true">📺</span>
-      <h2 class="card-title">Quiz Night</h2>
-      <p class="card-desc">Pick a category. Pick a point value. Race for the buzzer glory and bragging rights.</p>
-      <span class="card-cta">Play Quiz Night <span class="arrow">→</span></span>
-      <div class="card-deco quiz-shine"></div>
-    </a>
+    <div class="game-group">
+      <h2 class="game-group-label">🕵️ Word &amp; Deduction</h2>
+      <div class="game-grid">
+        <a class="game-card" href="spy.html" style="--card-accent:#ff3d81">
+          <span class="card-icon" aria-hidden="true">🕵️</span>
+          <h3 class="card-title">Spy Word</h3>
+          <p class="card-desc">Everyone gets the secret word. One player doesn't. Find the spy before they blend in.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 3&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="whoami.html" style="--card-accent:#ffb020">
+          <span class="card-icon" aria-hidden="true">🤔</span>
+          <h3 class="card-title">Who Am I?</h3>
+          <p class="card-desc">A secret identity is held up for the group to see &mdash; not you. Ask yes-or-no questions to guess who you are.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 3&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+            <span class="meta-chip meta-gm">🎙️ GM optional</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="password.html" style="--card-accent:#4d8cff">
+          <span class="card-icon" aria-hidden="true">🔐</span>
+          <h3 class="card-title">Password</h3>
+          <p class="card-desc">Give one-word clues to help the group guess your secret word &mdash; fewer clues, more points.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 2&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+            <span class="meta-chip meta-gm">🎙️ GM optional</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="categories.html" style="--card-accent:#17d4b8">
+          <span class="card-icon" aria-hidden="true">🧠</span>
+          <h3 class="card-title">Categories</h3>
+          <p class="card-desc">A random category appears &mdash; name something that fits before the timer runs out.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 2&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="game-group">
+      <h2 class="game-group-label">📺 Trivia &amp; Knowledge</h2>
+      <div class="game-grid">
+        <a class="game-card" href="quiz.html" style="--card-accent:#ffcb3c">
+          <span class="card-icon" aria-hidden="true">📺</span>
+          <h3 class="card-title">Quiz Night</h3>
+          <p class="card-desc">Pick a category, pick a point value, race for the buzzer glory and bragging rights.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 1&ndash;6 teams</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+            <span class="meta-chip meta-gm">🎙️ GM optional</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="guessthesong.html" style="--card-accent:#ff3d9a">
+          <span class="card-icon" aria-hidden="true">🎵</span>
+          <h3 class="card-title">Guess the Song</h3>
+          <p class="card-desc">An emoji rebus, then clues, reveal a song bit by bit &mdash; shout it before your friends do.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 Any group</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="pictureguess.html" style="--card-accent:#22c5ff">
+          <span class="card-icon" aria-hidden="true">🖼️</span>
+          <h3 class="card-title">Picture Guess</h3>
+          <p class="card-desc">A blurry emoji picture sharpens into focus on its own &mdash; guess it as fast as you can.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 Any group</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="game-group">
+      <h2 class="game-group-label">🎉 Party &amp; Voting</h2>
+      <div class="game-grid">
+        <a class="game-card" href="twotruths.html" style="--card-accent:#2fd67f">
+          <span class="card-icon" aria-hidden="true">2️⃣</span>
+          <h3 class="card-title">Two Truths and a Lie</h3>
+          <p class="card-desc">Two true statements, one lie. Write your own or grab a ready-made prompt &mdash; can the group spot it?</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 2&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="wouldurather.html" style="--card-accent:#ff5c8a">
+          <span class="card-icon" aria-hidden="true">🤷</span>
+          <h3 class="card-title">Would You Rather?</h3>
+          <p class="card-desc">Funny, difficult, or extreme dilemmas &mdash; everyone votes A or B, results reveal automatically.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 2&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="mostlikely.html" style="--card-accent:#c65cff">
+          <span class="card-icon" aria-hidden="true">👥</span>
+          <h3 class="card-title">Most Likely To</h3>
+          <p class="card-desc">"Most likely to become famous?" &mdash; vote for someone in the group and see who gets called out.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 3&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+          </div>
+        </a>
+
+        <a class="game-card" href="charades.html" style="--card-accent:#ff4fa3">
+          <span class="card-icon" aria-hidden="true">🎭</span>
+          <h3 class="card-title">Charades</h3>
+          <p class="card-desc">Act out a secret word or phrase &mdash; no talking allowed. Beat the clock before it's the next player's turn.</p>
+          <div class="card-meta">
+            <span class="meta-chip">👥 3&ndash;10 players</span>
+            <span class="meta-chip meta-auto">🤖 Automated</span>
+            <span class="meta-chip meta-gm">🎙️ GM optional</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
   </section>
 
   <footer class="home-footer">Works on one screen &middot; no install &middot; no accounts</footer>

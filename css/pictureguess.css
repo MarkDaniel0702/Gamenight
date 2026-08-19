@@ -1,0 +1,27 @@
+:root{
+  --ink:#0a1622;
+  --panel:#122232;
+  --panel-2:#172c3f;
+  --paper:#eef7fb;
+  --paper-dim:#93b0c4;
+  --accent:#22c5ff;
+  --accent-2:#ffd23f;
+  --border:rgba(238,247,251,0.12);
+}
+
+.picture-frame{
+  max-width:420px;height:260px;margin:0 auto 1.5rem;
+  background:linear-gradient(165deg, var(--panel-2), var(--panel));
+  border:1px solid rgba(34,197,255,0.3);border-radius:24px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.picture-emoji{
+  font-size:6.5rem;
+  transition:filter 0.6s ease;
+  filter:blur(20px);
+}
+
+#sharpen-timer{display:block;text-align:center;margin:0 0 1rem;}
+.song-reveal-btn{max-width:640px;margin:0.8rem auto 1.5rem;display:block;}
+.song-end{max-width:200px;margin:1.5rem auto 0;display:block;}
