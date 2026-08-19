@@ -34,6 +34,7 @@
         <li>Whoever's turn it is calls out a category and point value shown in the turn banner, and taps that tile.</li>
         <li>Read the question out loud. The answer stays hidden until someone taps <strong>Show Answer</strong> &mdash; or the timer runs out in Automated mode.</li>
         <li>Any team can tap their own <strong>+points</strong> button once they've answered correctly.</li>
+        <li>Watch for <strong>⭐ BONUS</strong> tiles &mdash; they trigger a surprise event instead of a question.</li>
         <li>The turn passes automatically to the next team. When the board is empty, the final results appear on their own.</li>
       </ol>
     </details>
@@ -57,6 +58,24 @@
     <div class="block">
       <h2 class="block-label">4. Timer</h2>
       <div id="timer-setup"></div>
+    </div>
+
+    <div class="block">
+      <h2 class="block-label">5. Bonus Slots</h2>
+      <div class="bonus-setup">
+        <label class="toggle-check">
+          <input type="checkbox" id="bonus-toggle" checked>
+          <span>⭐ Add bonus slots to the board</span>
+        </label>
+        <div class="bonus-count-row" id="bonus-count-row">
+          <span>How many?</span>
+          <div class="stepper">
+            <button type="button" id="bonus-minus" class="stepper-btn" aria-label="Decrease bonus slots">&minus;</button>
+            <span id="bonus-count-display" class="stepper-count">2</span>
+            <button type="button" id="bonus-plus" class="stepper-btn" aria-label="Increase bonus slots">&plus;</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <button type="button" id="btn-start" class="btn-primary" disabled>Start Quiz &rarr;</button>
@@ -102,6 +121,14 @@
     </div>
     <button type="button" id="btn-show-answer" class="btn-primary">Show Answer</button>
     <div id="award-row" class="award-row hidden"></div>
+
+    <div id="bonus-body" class="bonus-body hidden">
+      <span class="bonus-icon" id="bonus-icon">⭐</span>
+      <h3 class="bonus-title" id="bonus-title">Bonus Points</h3>
+      <p class="bonus-desc" id="bonus-desc">Description text</p>
+      <div id="bonus-interactive" class="bonus-interactive"></div>
+    </div>
+
     <button type="button" id="btn-back-board" class="btn-secondary hidden">Back to Board</button>
   </div>
 </div>

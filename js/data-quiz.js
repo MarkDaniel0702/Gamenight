@@ -2047,3 +2047,16 @@ const QUIZ_THEME_GROUPS = {
   "Academic & Local": ["College Programs", "Philippine Trivia", "E-Commerce"],
   "General Knowledge": ["World Geography", "Science", "World Trivia", "History", "Technology", "Food", "Famous People", "Sports"]
 };
+
+// Quiz Night bonus tile events. Adding a new event here is enough to put it
+// into rotation — no other code needs to change. `requiresOpponent: true`
+// excludes an event from the draw when fewer than 2 teams are playing, so a
+// solo board never rolls something it can't resolve.
+const QUIZ_BONUS_EVENTS = [
+  { type: "points", icon: "⭐", name: "Bonus Points", desc: "A burst of good luck — free points, no question required." },
+  { type: "double", icon: "✌️", name: "Double Points", desc: "This team's next correct answer is worth double points." },
+  { type: "steal", icon: "🥷", name: "Steal", desc: "Take points from a rival team.", requiresOpponent: true },
+  { type: "risk", icon: "🎲", name: "Risk It", desc: "Wager points on a coin flip — double or nothing.", requiresOpponent: true },
+  { type: "freepass", icon: "🎟️", name: "Free Pass", desc: "Bank a one-time pass to claim credit for a missed question later." },
+  { type: "lucky", icon: "🍀", name: "Lucky Draw", desc: "The fates decide — could be a windfall, could be nothing." }
+];

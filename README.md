@@ -75,6 +75,27 @@ A Jeopardy-style trivia board with **17 themes** and a 100–500 point system. P
 - Any team taps their own **+points** button when they get it right.
 - Once every tile is answered, a **🏁 results screen** appears automatically with final standings.
 - Every category and point value draws from a **reserved pool of 3 questions**, not just one — see [❓ Randomized Question Pools](#-randomized-question-pools) below.
+- Optionally, 1–4 tiles on the board are **⭐ Bonus Slots** instead of questions — see [⭐ Bonus Slots](#-bonus-slots) below.
+
+---
+
+## ⭐ Bonus Slots
+
+Turn a plain trivia board into something a little more chaotic. At setup, switch on **Bonus Slots** and pick how many (1–4, default 2) — that many tiles on the board are swapped for a shimmering **⭐ BONUS** tile instead of a question, scattered randomly across categories and point values.
+
+- Bonus tiles are chosen fresh every time you **Start Quiz** or **Reset Game** — the same board never has the same bonus tiles twice in a row.
+- Tapping one skips the question entirely and triggers a random event for the picking team:
+
+| Event | What happens |
+|---|---|
+| ⭐ **Bonus Points** | A random 50–300 points, awarded immediately. |
+| ✌️ **Double Points** | The team's next correct answer is worth double — shown as a chip on their scoreboard until used. |
+| 🥷 **Steal** | Take 150 points from a rival team (capped at what they actually have). |
+| 🎲 **Risk It** | Wager 100, 200, or 300 points on a coin flip — win doubles it, lose forfeits the wager. |
+| 🎟️ **Free Pass** | Banks a one-time pass — shown as a chip on the scoreboard — that can claim full credit for a question nobody answers correctly. |
+| 🍀 **Lucky Draw** | A small random swing, from -50 to +100, decided by fate. |
+
+Once triggered, a bonus tile locks and reads **⭐ USED**, just like an answered question tile — it still counts toward the board's completion. **Steal** and **Risk It** never appear in a 1-team game, since neither has anything meaningful to do solo. Turn Bonus Slots off at setup for a purely trivia-only board.
 
 ---
 
@@ -425,6 +446,7 @@ The other nine games use much simpler, flat data files — no nested point struc
 | Max teams | `MAX_TEAMS` near the top of `js/quiz.js`, `js/guessthesong.js`, or `js/pictureguess.js` |
 | A game's recommended timer / presets / default on-off | The `createTimerSetup({...})` call near the top of that game's `js/<game>.js` — `recommended`, `presets`, and `defaultEnabled` are all plain arguments. Players themselves never need to touch this: every setup screen already lets them pick a custom duration or switch the timer off. |
 | Quiz Night point tiers | `POINT_VALUES` in `js/quiz.js` — update every category's `questions` object to match |
+| Quiz Night bonus events | `QUIZ_BONUS_EVENTS` in `js/data-quiz.js` — add a new object to the array and it's automatically in rotation; the max bonus slot count is `MAX_BONUS` in `js/quiz.js` |
 
 ---
 

@@ -7,13 +7,18 @@
   const ANSWER_TIMER_RECOMMENDED = 30;
   const questionBank = createUsedRegistry("quiz-questions");
 
+  const MIN_BONUS = 1;
+  const MAX_BONUS = 4;
+
   const state = {
     theme: null,
-    teams: [], // { name, score, color }
+    teams: [], // { name, score, color, perks: { double, freePass } }
     answered: new Set(), // "categoryIndex-points"
     current: null, // { catIndex, points, category, question }
     mode: "automated", // "automated" (timer on by default) or "gamemaster" (timer off by default)
-    turnIndex: 0
+    turnIndex: 0,
+    bonusCount: 2,
+    bonusTiles: new Set() // "categoryIndex-points" keys chosen as bonus tiles this game
   };
 
   const screens = {
@@ -93,7 +98,8 @@
     state.teams.push({
       name: name || `Team ${state.teams.length + 1}`,
       score: 0,
-      color: TEAM_COLORS[state.teams.length % TEAM_COLORS.length]
+      color: TEAM_COLORS[state.teams.length % TEAM_COLORS.length],
+      perks: { double: false, freePass: false }
     });
     renderTeamsSetup();
   }
@@ -166,9 +172,50 @@
     defaultEnabled: true
   });
 
+  // ---------- Setup: bonus slots ----------
+  const bonusToggle = document.getElementById("bonus-toggle");
+  const bonusCountRow = document.getElementById("bonus-count-row");
+  const bonusMinus = document.getElementById("bonus-minus");
+  const bonusPlus = document.getElementById("bonus-plus");
+  const bonusCountDisplay = document.getElementById("bonus-count-display");
+
+  function updateBonusSetupUI() {
+    bonusCountDisplay.textContent = state.bonusCount;
+    bonusMinus.disabled = state.bonusCount <= MIN_BONUS;
+    bonusPlus.disabled = state.bonusCount >= MAX_BONUS;
+    bonusCountRow.classList.toggle("hidden", !bonusToggle.checked);
+  }
+  bonusToggle.addEventListener("change", updateBonusSetupUI);
+  bonusMinus.addEventListener("click", () => {
+    if (state.bonusCount > MIN_BONUS) {
+      state.bonusCount--;
+      updateBonusSetupUI();
+    }
+  });
+  bonusPlus.addEventListener("click", () => {
+    if (state.bonusCount < MAX_BONUS) {
+      state.bonusCount++;
+      updateBonusSetupUI();
+    }
+  });
+  updateBonusSetupUI();
+
+  function generateBonusTiles() {
+    state.bonusTiles = new Set();
+    if (!bonusToggle.checked) return;
+    const theme = QUIZ_THEMES[state.theme];
+    const allKeys = [];
+    theme.categories.forEach((cat, catIndex) => {
+      POINT_VALUES.forEach((points) => allKeys.push(`${catIndex}-${points}`));
+    });
+    const count = Math.min(state.bonusCount, allKeys.length);
+    shuffle(allKeys).slice(0, count).forEach((k) => state.bonusTiles.add(k));
+  }
+
   btnStart.addEventListener("click", () => {
     state.answered = new Set();
     state.turnIndex = 0;
+    generateBonusTiles();
     renderScoreboard();
     renderBoard();
     showScreen("board");
@@ -206,9 +253,13 @@
     state.teams.forEach((team, i) => {
       const chip = document.createElement("div");
       chip.className = "score-chip";
+      const perkBadges = [];
+      if (team.perks.double) perkBadges.push('<span class="perk-badge" title="Double Points active">✌️</span>');
+      if (team.perks.freePass) perkBadges.push('<span class="perk-badge" title="Free Pass banked">🎟️</span>');
       chip.innerHTML = `
         <span class="score-swatch" style="background:${team.color}"></span>
         <span class="score-name">${team.name}</span>
+        ${perkBadges.join("")}
         <span class="score-value" id="score-val-${i}">${team.score}</span>
         <span class="score-btns">
           <button type="button" class="score-btn" data-i="${i}" data-d="10">+</button>
@@ -244,11 +295,19 @@
     POINT_VALUES.forEach((points) => {
       theme.categories.forEach((cat, catIndex) => {
         const key = `${catIndex}-${points}`;
+        const isBonus = state.bonusTiles.has(key);
+        const used = state.answered.has(key);
         const tile = document.createElement("button");
         tile.type = "button";
         tile.className = "tile";
-        tile.textContent = points;
-        tile.disabled = state.answered.has(key);
+        if (isBonus) {
+          tile.classList.add("tile-bonus");
+          if (used) tile.classList.add("tile-used");
+          tile.innerHTML = `⭐<span class="tile-sub">${used ? "USED" : "BONUS"}</span>`;
+        } else {
+          tile.textContent = points;
+        }
+        tile.disabled = used;
         tile.addEventListener("click", () => openQuestion(catIndex, points));
         boardEl.appendChild(tile);
       });
@@ -264,6 +323,12 @@
   const btnShowAnswer = document.getElementById("btn-show-answer");
   const awardRow = document.getElementById("award-row");
   const btnBackBoard = document.getElementById("btn-back-board");
+  const gameTimerMount = document.getElementById("game-timer");
+  const bonusBody = document.getElementById("bonus-body");
+  const bonusIcon = document.getElementById("bonus-icon");
+  const bonusTitle = document.getElementById("bonus-title");
+  const bonusDesc = document.getElementById("bonus-desc");
+  const bonusInteractive = document.getElementById("bonus-interactive");
 
   const questionTimer = createGameTimer({
     mount: document.getElementById("game-timer"),
@@ -282,17 +347,26 @@
   }
 
   function openQuestion(catIndex, points) {
+    const key = `${catIndex}-${points}`;
+    if (state.bonusTiles.has(key)) {
+      openBonus(catIndex, points, key);
+      return;
+    }
+
     const theme = QUIZ_THEMES[state.theme];
     const category = theme.categories[catIndex];
     const pool = category.questions[points];
     const bankKey = `${state.theme}|${category.name}|${points}`;
     const question = questionBank.pickUnused(bankKey, pool).item;
-    const key = `${catIndex}-${points}`;
 
     state.answered.add(key);
     state.current = { catIndex, points };
     renderBoard();
 
+    bonusBody.classList.add("hidden");
+    qMeta.classList.remove("hidden");
+    qText.classList.remove("hidden");
+    gameTimerMount.classList.remove("hidden");
     qMeta.textContent = `${category.name} · ${points} pts`;
     qText.textContent = question.q;
     aText.textContent = question.a;
@@ -314,13 +388,31 @@
     btnBackBoard.classList.remove("hidden");
 
     awardRow.innerHTML = "";
-    state.teams.forEach((team, i) => {
+    state.teams.forEach((team) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "award-btn";
-      btn.innerHTML = `<span class="sw" style="background:${team.color}"></span> +${state.current.points} ${team.name}`;
+      const pts = team.perks.double ? state.current.points * 2 : state.current.points;
+      btn.innerHTML = `<span class="sw" style="background:${team.color}"></span> +${pts} ${team.name}${team.perks.double ? " (2x!)" : ""}`;
+      btn.addEventListener("click", () => {
+        team.score += pts;
+        if (team.perks.double) team.perks.double = false;
+        renderScoreboard();
+        closeOverlay();
+        afterQuestionClosed();
+      });
+      awardRow.appendChild(btn);
+    });
+
+    state.teams.forEach((team) => {
+      if (!team.perks.freePass) return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "award-btn award-btn-perk";
+      btn.innerHTML = `<span class="sw" style="background:${team.color}"></span> 🎟️ Free Pass: award ${state.current.points} to ${team.name}`;
       btn.addEventListener("click", () => {
         team.score += state.current.points;
+        team.perks.freePass = false;
         renderScoreboard();
         closeOverlay();
         afterQuestionClosed();
@@ -339,7 +431,109 @@
   function closeOverlay() {
     stopTimer();
     overlay.classList.remove("active");
+    bonusBody.classList.add("hidden");
     state.current = null;
+  }
+
+  // ---------- Bonus events ----------
+  function openBonus(catIndex, points, key) {
+    const category = QUIZ_THEMES[state.theme].categories[catIndex];
+
+    state.answered.add(key);
+    state.current = { catIndex, points, bonus: true };
+    renderBoard();
+
+    qMeta.textContent = `${category.name} · ${points} pts · BONUS`;
+    qMeta.classList.remove("hidden");
+    qText.classList.add("hidden");
+    gameTimerMount.classList.add("hidden");
+    answerBlock.classList.add("hidden");
+    btnShowAnswer.classList.add("hidden");
+    awardRow.classList.add("hidden");
+    btnBackBoard.classList.add("hidden");
+    bonusBody.classList.remove("hidden");
+
+    const pickingTeam = state.teams[state.turnIndex];
+    const pool = state.teams.length >= 2
+      ? QUIZ_BONUS_EVENTS
+      : QUIZ_BONUS_EVENTS.filter((e) => !e.requiresOpponent);
+    const event = pool[Math.floor(Math.random() * pool.length)];
+
+    bonusIcon.textContent = event.icon;
+    bonusTitle.textContent = event.name;
+    bonusDesc.textContent = event.desc;
+    bonusInteractive.innerHTML = "";
+
+    overlay.classList.add("active");
+    resolveBonusEvent(event, pickingTeam);
+  }
+
+  function finishBonus() {
+    renderScoreboard();
+    btnBackBoard.classList.remove("hidden");
+  }
+
+  function resolveBonusEvent(event, pickingTeam) {
+    if (event.type === "points") {
+      const amt = 50 * (1 + Math.floor(Math.random() * 6)); // 50..300, step 50
+      pickingTeam.score += amt;
+      bonusInteractive.innerHTML = `<p class="bonus-result">+${amt} points for <strong>${pickingTeam.name}</strong>!</p>`;
+      finishBonus();
+    } else if (event.type === "double") {
+      pickingTeam.perks.double = true;
+      bonusInteractive.innerHTML = `<p class="bonus-result"><strong>${pickingTeam.name}</strong>'s next correct answer is worth double!</p>`;
+      finishBonus();
+    } else if (event.type === "freepass") {
+      pickingTeam.perks.freePass = true;
+      bonusInteractive.innerHTML = `<p class="bonus-result"><strong>${pickingTeam.name}</strong> banked a Free Pass!</p>`;
+      finishBonus();
+    } else if (event.type === "lucky") {
+      const draws = [
+        { amt: 100, text: "Lucky! +100 points." },
+        { amt: 50, text: "A little luck. +50 points." },
+        { amt: -50, text: "Unlucky! -50 points." },
+        { amt: 0, text: "Nothing happens. Break even." }
+      ];
+      const draw = draws[Math.floor(Math.random() * draws.length)];
+      pickingTeam.score += draw.amt;
+      bonusInteractive.innerHTML = `<p class="bonus-result">${draw.text}</p>`;
+      finishBonus();
+    } else if (event.type === "steal") {
+      state.teams.forEach((t) => {
+        if (t === pickingTeam) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "award-btn";
+        btn.innerHTML = `<span class="sw" style="background:${t.color}"></span> Steal from ${t.name}`;
+        btn.addEventListener("click", () => {
+          const stealAmt = Math.min(150, Math.max(0, t.score));
+          t.score -= stealAmt;
+          pickingTeam.score += stealAmt;
+          bonusInteractive.innerHTML = `<p class="bonus-result"><strong>${pickingTeam.name}</strong> stole ${stealAmt} points from <strong>${t.name}</strong>!</p>`;
+          finishBonus();
+        });
+        bonusInteractive.appendChild(btn);
+      });
+    } else if (event.type === "risk") {
+      [100, 200, 300].forEach((wager) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "award-btn";
+        btn.textContent = `Risk ${wager}`;
+        btn.addEventListener("click", () => {
+          const win = Math.random() < 0.5;
+          if (win) {
+            pickingTeam.score += wager * 2;
+            bonusInteractive.innerHTML = `<p class="bonus-result">🎉 Win! <strong>${pickingTeam.name}</strong> gains ${wager * 2} points!</p>`;
+          } else {
+            pickingTeam.score -= wager;
+            bonusInteractive.innerHTML = `<p class="bonus-result">💥 Lost the risk. <strong>${pickingTeam.name}</strong> loses ${wager} points.</p>`;
+          }
+          finishBonus();
+        });
+        bonusInteractive.appendChild(btn);
+      });
+    }
   }
 
   function afterQuestionClosed() {
@@ -380,7 +574,11 @@
   function resetBoard() {
     state.answered = new Set();
     state.turnIndex = 0;
-    state.teams.forEach((t) => (t.score = 0));
+    state.teams.forEach((t) => {
+      t.score = 0;
+      t.perks = { double: false, freePass: false };
+    });
+    generateBonusTiles();
     renderScoreboard();
     renderBoard();
   }
@@ -390,6 +588,7 @@
     state.teams = [];
     state.answered = new Set();
     state.turnIndex = 0;
+    state.bonusTiles = new Set();
     document.querySelectorAll(".theme-btn:not(.mode-btn)").forEach((b) => b.classList.remove("selected"));
     addTeam("Team 1");
     addTeam("Team 2");
