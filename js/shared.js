@@ -1,7 +1,5 @@
-// Shared helpers for the party-game family (Who Am I?, Password, Two Truths
-// and a Lie, Would You Rather?, Charades, Guess the Song, Picture Guess,
-// Most Likely To, Categories). Spy Word and Quiz Night are intentionally
-// left untouched and do not load this file.
+// Shared helpers loaded by every game on the site, including Spy Word and
+// Quiz Night.
 "use strict";
 
 function pickRandom(arr) {
@@ -32,6 +30,90 @@ function pickRandomUnused(arr, usedIndexSet) {
   const idx = available[Math.floor(Math.random() * available.length)];
   usedIndexSet.add(idx);
   return { item: arr[idx], index: idx };
+}
+
+// Like pickRandomUnused, but persisted to localStorage so a slot's history
+// survives page reloads and separate game nights on the same device/browser.
+// `namespace` scopes the storage keys (e.g. "quiz"); each distinct `key`
+// passed to pickUnused (e.g. "Cartoons|Disney Channel|100") gets its own
+// used-index history. Falls back to an in-memory Map if localStorage is
+// unavailable (file:// pages, private browsing, storage quota, etc).
+function createUsedRegistry(namespace) {
+  const memory = new Map();
+  const storageKey = (key) => `br:${namespace}:${key}`;
+
+  function readSet(key) {
+    if (memory.has(key)) return memory.get(key);
+    let arr = [];
+    try {
+      const raw = localStorage.getItem(storageKey(key));
+      if (raw) arr = JSON.parse(raw);
+    } catch (e) {
+      arr = [];
+    }
+    const set = new Set(Array.isArray(arr) ? arr : []);
+    memory.set(key, set);
+    return set;
+  }
+
+  function writeSet(key, set) {
+    memory.set(key, set);
+    try {
+      localStorage.setItem(storageKey(key), JSON.stringify(Array.from(set)));
+    } catch (e) {
+      // ignore — in-memory Map still holds the current session's history
+    }
+  }
+
+  return {
+    getSet: readSet,
+    mark(key, index) {
+      const set = readSet(key);
+      set.add(index);
+      writeSet(key, set);
+    },
+    clear(key) {
+      writeSet(key, new Set());
+    },
+    // Picks a random unused item from `arr` for `key`, auto-resetting once
+    // every item's been seen. When a reset happens, the item most recently
+    // used before the reset is excluded from the first pick of the new
+    // cycle (unless arr has only one item), so the same item never repeats
+    // back-to-back across a pool exhaustion.
+    pickUnused(key, arr) {
+      const used = readSet(key);
+      let available = [];
+      for (let i = 0; i < arr.length; i++) {
+        if (!used.has(i)) available.push(i);
+      }
+      if (available.length === 0) {
+        const lastKey = `${storageKey(key)}:last`;
+        let lastIndex = -1;
+        try {
+          const raw = localStorage.getItem(lastKey);
+          if (raw != null) lastIndex = Number(raw);
+        } catch (e) {
+          lastIndex = -1;
+        }
+        available = [];
+        for (let i = 0; i < arr.length; i++) available.push(i);
+        if (arr.length > 1 && available.includes(lastIndex)) {
+          available = available.filter((i) => i !== lastIndex);
+        }
+        writeSet(key, new Set());
+      }
+      const idx = available[Math.floor(Math.random() * available.length)];
+      const set = readSet(key);
+      set.add(idx);
+      writeSet(key, set);
+      try {
+        localStorage.setItem(`${storageKey(key)}:last`, String(idx));
+      } catch (e) {
+        // ignore
+      }
+      return { item: arr[idx], index: idx };
+    }
+  };
 }
 
 // A start/stop/pause/resume countdown timer. onTick(secondsLeft) fires every

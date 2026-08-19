@@ -5,6 +5,7 @@
   const MAX_TEAMS = 6;
   const POINT_VALUES = [100, 200, 300, 400, 500];
   const ANSWER_TIMER_RECOMMENDED = 30;
+  const questionBank = createUsedRegistry("quiz-questions");
 
   const state = {
     theme: null,
@@ -283,7 +284,9 @@
   function openQuestion(catIndex, points) {
     const theme = QUIZ_THEMES[state.theme];
     const category = theme.categories[catIndex];
-    const question = category.questions[points];
+    const pool = category.questions[points];
+    const bankKey = `${state.theme}|${category.name}|${points}`;
+    const question = questionBank.pickUnused(bankKey, pool).item;
     const key = `${catIndex}-${points}`;
 
     state.answered.add(key);

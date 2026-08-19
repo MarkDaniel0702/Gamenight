@@ -8,6 +8,7 @@
   <img alt="Games" src="https://img.shields.io/badge/games-11-purple">
   <img alt="Spy Word themes" src="https://img.shields.io/badge/spy%20word%20themes-57-e8324f">
   <img alt="Quiz Night themes" src="https://img.shields.io/badge/quiz%20night%20themes-17-ffcb3c">
+  <img alt="Quiz Night questions" src="https://img.shields.io/badge/quiz%20night%20questions-975-ffcb3c">
   <img alt="Customizable timers" src="https://img.shields.io/badge/timers-customizable-2fd67f">
 </p>
 
@@ -73,6 +74,19 @@ A Jeopardy-style trivia board with **17 themes** and a 100–500 point system. P
 - The answer stays hidden until "Show Answer" — or the timer (30s recommended, customizable) runs out, in Automated mode.
 - Any team taps their own **+points** button when they get it right.
 - Once every tile is answered, a **🏁 results screen** appears automatically with final standings.
+- Every category and point value draws from a **reserved pool of 3 questions**, not just one — see [❓ Randomized Question Pools](#-randomized-question-pools) below.
+
+---
+
+## ❓ Randomized Question Pools
+
+Every Quiz Night tile is backed by a small pool of interchangeable questions, not a single fixed one — so picking "Disney Channel · 100" a second time doesn't just replay the same question from last time.
+
+- Each category/point-value slot reserves **3 questions** at the same difficulty and on the same subject, authored to be indistinguishable in style from one another.
+- A tile's question is chosen **at random** from its slot's pool the moment it's revealed.
+- The app **remembers which questions a slot has already shown**, in this browser, across reloads and separate game nights — so the same slot won't repeat a question until every question in its pool has been used at least once.
+- Once a slot's pool is exhausted, it **reshuffles automatically** — and skips replaying the question that was *just* shown, so a fresh cycle never starts with an immediate repeat.
+- This all happens per slot, independently — playing "Disney Channel · 100" repeatedly doesn't affect "Disney Channel · 200" or any other tile.
 
 ---
 
@@ -318,6 +332,7 @@ Gamenight/
 | `createTimer({ seconds, onTick, onExpire })` | A start/stop/pause/resume countdown — the low-level engine behind every timer |
 | `createTimerSetup({ mount, unitLabel, recommended, presets, defaultEnabled })` | Renders the universal pre-game timer widget (switch, presets, custom input) used at every game's setup screen |
 | `createGameTimer({ mount, onExpire, showControls })` | Renders the universal in-game timer HUD (countdown + Pause/Resume/Reset) and drives it via `createTimer` |
+| `createUsedRegistry(namespace)` | A `localStorage`-backed version of `pickRandomUnused` — powers Quiz Night's per-slot question pools, remembering history across reloads |
 | `renderGroupedPicker(container, groups, renderCard)` | The grouped card-picker UI (themes, categories, prompt sets) |
 | `createRoster({ ... })` | A named-player list with a +/- stepper |
 | `createTeamScoreboard({ ... })` | An optional add/remove/rename team scoreboard, Quiz-Night-style |
@@ -359,7 +374,7 @@ Then add an icon in `SPY_THEME_ICONS` and, optionally, a spot for it in `SPY_THE
 <details>
 <summary><strong>❓ Add new Quiz Night questions</strong></summary>
 
-Open `js/data-quiz.js`. Every theme needs an `icon` and a list of `categories`, and every category needs all five point levels:
+Open `js/data-quiz.js`. Every theme needs an `icon` and a list of `categories`, and every category needs all five point levels — each holding a **pool** (array) of questions rather than a single one:
 
 ```js
 "Your Theme": {
@@ -368,11 +383,15 @@ Open `js/data-quiz.js`. Every theme needs an `icon` and a list of `categories`, 
     {
       name: "Your Category",
       questions: {
-        100: { q: "An easy question?", a: "The answer" },
-        200: { q: "A slightly harder question?", a: "The answer" },
-        300: { q: "A moderate question?", a: "The answer" },
-        400: { q: "A difficult question?", a: "The answer" },
-        500: { q: "A very difficult question?", a: "The answer" }
+        100: [
+          { q: "An easy question?", a: "The answer" },
+          { q: "Another easy question, same subject?", a: "The answer" },
+          { q: "A third easy question, same subject?", a: "The answer" }
+        ],
+        200: [ /* 3 slightly harder questions, same shape */ ],
+        300: [ /* 3 moderate questions */ ],
+        400: [ /* 3 difficult questions */ ],
+        500: [ /* 3 very difficult questions */ ]
       }
     }
   ]
@@ -382,7 +401,7 @@ Open `js/data-quiz.js`. Every theme needs an `icon` and a list of `categories`, 
 Add it to `QUIZ_THEME_GROUPS` the same way as Spy Word. Themes with more than 5 categories automatically get a scrollable board — no extra work needed.
 
 > [!IMPORTANT]
-> Every category must have exactly the five point keys `100`–`500`, or that tile won't render.
+> Every category must have exactly the five point keys `100`–`500`, each an **array** of question objects, or that tile won't render. A pool can hold any number ≥ 1 — 3 is the site's convention, giving each slot enough variety to avoid repeats across a few plays — see [❓ Randomized Question Pools](#-randomized-question-pools).
 
 </details>
 
