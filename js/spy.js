@@ -37,21 +37,54 @@
   const namesGrid = document.getElementById("names-grid");
   const btnStart = document.getElementById("btn-start");
 
+  function groupedThemeNames() {
+    const groups = {};
+    const placed = new Set();
+    Object.keys(SPY_THEME_GROUPS || {}).forEach((groupName) => {
+      const themeNames = SPY_THEME_GROUPS[groupName].filter((n) => SPY_THEMES[n]);
+      if (themeNames.length) {
+        groups[groupName] = themeNames;
+        themeNames.forEach((n) => placed.add(n));
+      }
+    });
+    const leftovers = Object.keys(SPY_THEMES).filter((n) => !placed.has(n));
+    if (leftovers.length) groups["More Themes"] = leftovers;
+    return groups;
+  }
+
+  function makeThemeButton(themeName) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-btn";
+    btn.dataset.theme = themeName;
+    btn.innerHTML = `<span class="t-icon">${SPY_THEME_ICONS[themeName] || "🎲"}</span><span class="t-name">${themeName}</span>`;
+    btn.addEventListener("click", () => {
+      state.theme = themeName;
+      document.querySelectorAll(".theme-btn").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      validateSetup();
+    });
+    return btn;
+  }
+
   function renderThemes() {
     themeGrid.innerHTML = "";
-    Object.keys(SPY_THEMES).forEach((themeName) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "theme-btn";
-      btn.dataset.theme = themeName;
-      btn.innerHTML = `<span class="t-icon">${SPY_THEME_ICONS[themeName] || "🎲"}</span><span class="t-name">${themeName}</span>`;
-      btn.addEventListener("click", () => {
-        state.theme = themeName;
-        document.querySelectorAll(".theme-btn").forEach((b) => b.classList.remove("selected"));
-        btn.classList.add("selected");
-        validateSetup();
-      });
-      themeGrid.appendChild(btn);
+    const groups = groupedThemeNames();
+    Object.keys(groups).forEach((groupName) => {
+      const section = document.createElement("div");
+      section.className = "theme-group";
+
+      const label = document.createElement("h3");
+      label.className = "theme-group-label";
+      label.textContent = groupName;
+      section.appendChild(label);
+
+      const row = document.createElement("div");
+      row.className = "theme-group-row";
+      groups[groupName].forEach((themeName) => row.appendChild(makeThemeButton(themeName)));
+      section.appendChild(row);
+
+      themeGrid.appendChild(section);
     });
   }
 

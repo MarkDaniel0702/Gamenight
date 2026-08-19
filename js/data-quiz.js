@@ -680,6 +680,61 @@ const QUIZ_THEMES = {
         }
       }
     ]
+  },
+  "E-Commerce": {
+    icon: "🛒",
+    categories: [
+      {
+        name: "E-Commerce Basics",
+        questions: {
+          100: { q: "What does the term 'E-Commerce' refer to?", a: "Electronic Commerce — buying and selling goods or services online" },
+          200: { q: "What abbreviation describes an online business that sells directly to individual customers, like an online clothing store selling to shoppers?", a: "B2C (Business-to-Consumer)" },
+          300: { q: "What abbreviation describes an online transaction between two businesses, such as a supplier selling materials to a manufacturer?", a: "B2B (Business-to-Business)" },
+          400: { q: "What abbreviation describes an online transaction where individual consumers sell directly to other consumers, such as on Facebook Marketplace?", a: "C2C (Consumer-to-Consumer)" },
+          500: { q: "What term describes a retail approach where a business sells to customers through multiple integrated channels at once, such as its website, app, and physical store?", a: "Omnichannel retailing" }
+        }
+      },
+      {
+        name: "Online Shopping",
+        questions: {
+          100: { q: "What is the term for the virtual list where online shoppers place items before checking out?", a: "The shopping cart" },
+          200: { q: "Which Southeast Asian E-Commerce app, recognizable by its orange branding, is one of the most popular online shopping platforms in the Philippines?", a: "Shopee" },
+          300: { q: "What term describes a code shoppers enter at checkout to receive a discount on their online order?", a: "A promo code (voucher code)" },
+          400: { q: "What term describes the E-Commerce practice of showing customers products similar to ones they've viewed or bought, to encourage more sales?", a: "Product recommendations" },
+          500: { q: "What annual online shopping event, held every November 11th and popularized by Alibaba, has become one of the world's largest single-day sales events?", a: "11.11 (Singles' Day sale)" }
+        }
+      },
+      {
+        name: "Digital Payments",
+        questions: {
+          100: { q: "What is the general term for a mobile app that lets users store money digitally and pay for purchases using their phone?", a: "A digital wallet (e-wallet)" },
+          200: { q: "Which popular Philippine mobile wallet app, often used for paying bills and online purchases, has a blue-colored logo?", a: "GCash" },
+          300: { q: "What three-letter code do shoppers enter when paying online with a credit or debit card, usually found on the back of the card?", a: "CVV (Card Verification Value)" },
+          400: { q: "What technology allows contactless payments by tapping a card or phone near a payment terminal?", a: "NFC (Near-Field Communication)" },
+          500: { q: "What decentralized digital currency, created in 2009 by the pseudonymous Satoshi Nakamoto, is sometimes accepted as an alternative online payment method?", a: "Bitcoin" }
+        }
+      },
+      {
+        name: "E-Commerce Platforms",
+        questions: {
+          100: { q: "Which American company, founded by Jeff Bezos in 1994, is the world's largest online marketplace and started out selling only books?", a: "Amazon" },
+          200: { q: "Which E-Commerce platform, known for its blue branding and popular across the Philippines and Southeast Asia, was originally founded by Rocket Internet in 2012?", a: "Lazada" },
+          300: { q: "Which Chinese E-Commerce company, founded by Jack Ma in 1999, operates platforms like Taobao and AliExpress?", a: "Alibaba" },
+          400: { q: "Which online marketplace, founded in 1995, was one of the first major platforms to popularize consumer-to-consumer online auctions?", a: "eBay" },
+          500: { q: "Which Canadian company provides the software platform that lets businesses set up their own independent online stores, powering brands like Gymshark and Allbirds?", a: "Shopify" }
+        }
+      },
+      {
+        name: "Online Business",
+        questions: {
+          100: { q: "What term describes a business that operates entirely online without any physical retail store?", a: "An online store (online-only business)" },
+          200: { q: "What term describes the service that brings an online order from the seller's warehouse to the customer's doorstep?", a: "Delivery (logistics / courier service)" },
+          300: { q: "What term describes online advertising strategies, such as social media ads and influencer marketing, used to promote products and drive sales?", a: "Digital marketing" },
+          400: { q: "What term describes a customer's overall satisfaction throughout the process of browsing, purchasing, and receiving an online order?", a: "Customer experience (CX)" },
+          500: { q: "What business model lets entrepreneurs sell products online without holding any inventory themselves, since the supplier ships directly to the customer?", a: "Dropshipping" }
+        }
+      }
+    ]
   }
 };
 
@@ -689,6 +744,6 @@ const QUIZ_THEMES = {
 const QUIZ_THEME_GROUPS = {
   "Pop Culture": ["Cartoons", "Marvel", "Anime", "Movies & TV", "Video Games"],
   "Music": ["Music"],
-  "Academic & Local": ["College Programs", "Philippine Trivia"],
+  "Academic & Local": ["College Programs", "Philippine Trivia", "E-Commerce"],
   "General Knowledge": ["World Geography", "Science", "World Trivia", "History", "Technology", "Food", "Famous People", "Sports"]
 };
