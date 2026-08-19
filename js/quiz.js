@@ -24,7 +24,8 @@
   const screens = {
     setup: document.getElementById("screen-setup"),
     board: document.getElementById("screen-board"),
-    results: document.getElementById("screen-results")
+    results: document.getElementById("screen-results"),
+    tiebreak: document.getElementById("screen-tiebreak")
   };
 
   function showScreen(name) {
@@ -549,16 +550,29 @@
   const resultsListEl = document.getElementById("results-list");
 
   function showResults() {
-    const ranked = state.teams.slice().sort((a, b) => b.score - a.score);
-    const topScore = ranked[0] ? ranked[0].score : 0;
-    const winners = ranked.filter((t) => t.score === topScore);
-    const medals = ["🥇", "🥈", "🥉"];
+    if (state.teams.length <= 1) {
+      renderFinalScores({ ranked: state.teams.slice(), winner: null, shared: false, tiebreak: null });
+      showScreen("results");
+      return;
+    }
+    resolveSession({
+      entrants: state.teams,
+      mount: document.getElementById("tiebreak-mount"),
+      onEnter: () => showScreen("tiebreak"),
+      onResolved: (result) => {
+        renderFinalScores(result);
+        showScreen("results");
+      }
+    });
+  }
 
+  function renderFinalScores(result) {
+    const medals = ["🥇", "🥈", "🥉"];
     resultsListEl.innerHTML = "";
-    ranked.forEach((team, i) => {
+    result.ranked.forEach((team, i) => {
       const row = document.createElement("div");
       row.className = "result-row";
-      if (winners.includes(team) && state.teams.length > 1) row.classList.add("result-winner");
+      if (result.winner === team) row.classList.add("result-winner");
       row.innerHTML = `
         <span class="result-medal">${medals[i] || "🎗️"}</span>
         <span class="result-swatch" style="background:${team.color}"></span>
@@ -567,8 +581,14 @@
       `;
       resultsListEl.appendChild(row);
     });
-
-    showScreen("results");
+    if (result.tiebreak) {
+      const note = document.createElement("p");
+      note.className = "screen-sub";
+      note.textContent = result.shared
+        ? "The tie held — the group agreed to share the win."
+        : `Tie-breaker settled it in ${result.tiebreak.rounds} round${result.tiebreak.rounds === 1 ? "" : "s"}.`;
+      resultsListEl.appendChild(note);
+    }
   }
 
   function resetBoard() {

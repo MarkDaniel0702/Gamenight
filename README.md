@@ -29,6 +29,7 @@ A colorful, browser-based party game platform — **11 games**, one shared scree
 | 🎨 **Deep theme libraries** | 57 Spy Word themes, 17 Quiz Night themes, plus curated category sets for every other game. |
 | ⏱️ **Universal customizable timers** | Every game shares one timer system — a recommended duration you can override with a preset or a custom value, Start/Pause/Resume/Reset controls, and a switch to turn it off entirely where a timer isn't required. |
 | 🏁 **Automatic results** | Boards, votes, and scoreboards resolve themselves the moment a round finishes. |
+| ⚔️ **Automatic tie-breaker** | A tied final score triggers a random tie-breaker challenge for just the tied entrants, looping until one winner remains — or accept a shared win instead. |
 | 📱 **Fully responsive** | Works on a laptop, tablet, or phone passed around a table. |
 | 🔒 **Private by design** | No accounts, no server, nothing leaves your browser. |
 
@@ -96,6 +97,29 @@ Turn a plain trivia board into something a little more chaotic. At setup, switch
 | 🍀 **Lucky Draw** | A small random swing, from -50 to +100, decided by fate. |
 
 Once triggered, a bonus tile locks and reads **⭐ USED**, just like an answered question tile — it still counts toward the board's completion. **Steal** and **Risk It** never appear in a 1-team game, since neither has anything meaningful to do solo. Turn Bonus Slots off at setup for a purely trivia-only board.
+
+---
+
+## ⚔️ Final Tie-Breaker
+
+Every game with final scores — Quiz Night, Charades, Password, Two Truths and a Lie, Guess the Song, and Picture Guess — automatically checks for a tie the moment the game ends, before the results screen appears.
+
+- **No tie? No interruption.** A single leader goes straight to the results screen, exactly as before.
+- **Tied for first?** Only the tied entrants move on to a **⚔️ Tie-Breaker** screen — everyone else's final placement is already locked in.
+- A challenge is drawn at random from six types and never immediately repeats:
+
+| Challenge | How it resolves |
+|---|---|
+| ⚡ **Sudden Death Trivia** | A hard question is read aloud; reveal the answer, then tap who got it first. |
+| 🎯 **Closest Guess** | A numeric estimation question with a known answer — each tied entrant enters a guess, closest wins. |
+| ⏱️ **Fastest Answer** | A question plus a short countdown — tap whoever answered first. |
+| 🔢 **Guess the Number** | A secret 1–100 number — each tied entrant guesses, closest wins. Fully self-resolving. |
+| 🗂️ **Category Showdown** | A category is shown — entrants take turns naming something that fits; the group taps ✅/❌ each turn, and the last one standing wins. |
+| 🎪 **Random Challenge** | A quick physical challenge (rock-paper-scissors, staring contest, thumb war) — tap the winner. |
+
+- Still tied after a round? The field narrows to just the entrants still tied, and a **new** challenge starts automatically — it keeps looping until exactly one winner remains.
+- Don't want to bother? **🤝 Accept a Shared Win** exits immediately with the tie left standing, and the results screen notes the tie was accepted rather than broken.
+- A tie-breaker challenge never touches game scores — it only decides who gets the win highlighted in the final results.
 
 ---
 
@@ -353,11 +377,12 @@ Gamenight/
 | `createTimer({ seconds, onTick, onExpire })` | A start/stop/pause/resume countdown — the low-level engine behind every timer |
 | `createTimerSetup({ mount, unitLabel, recommended, presets, defaultEnabled })` | Renders the universal pre-game timer widget (switch, presets, custom input) used at every game's setup screen |
 | `createGameTimer({ mount, onExpire, showControls })` | Renders the universal in-game timer HUD (countdown + Pause/Resume/Reset) and drives it via `createTimer` |
-| `createUsedRegistry(namespace)` | A `localStorage`-backed version of `pickRandomUnused` — powers Quiz Night's per-slot question pools, remembering history across reloads |
+| `createUsedRegistry(namespace)` | A `localStorage`-backed version of `pickRandomUnused` — powers Quiz Night's per-slot question pools, and the tie-breaker's no-immediate-repeat challenge draw |
 | `renderGroupedPicker(container, groups, renderCard)` | The grouped card-picker UI (themes, categories, prompt sets) |
 | `createRoster({ ... })` | A named-player list with a +/- stepper |
 | `createTeamScoreboard({ ... })` | An optional add/remove/rename team scoreboard, Quiz-Night-style |
 | `createScreenManager(screens)` | The show/hide screen-toggle pattern used throughout the site |
+| `resolveSession({ entrants, mount, onEnter, onResolved })` | The universal tie-breaker — detects a tie among the top scorers, plays it out (or accepts a shared win), and calls back with the settled result. See [⚔️ Final Tie-Breaker](#️-final-tie-breaker) |
 
 ---
 
@@ -447,6 +472,7 @@ The other nine games use much simpler, flat data files — no nested point struc
 | A game's recommended timer / presets / default on-off | The `createTimerSetup({...})` call near the top of that game's `js/<game>.js` — `recommended`, `presets`, and `defaultEnabled` are all plain arguments. Players themselves never need to touch this: every setup screen already lets them pick a custom duration or switch the timer off. |
 | Quiz Night point tiers | `POINT_VALUES` in `js/quiz.js` — update every category's `questions` object to match |
 | Quiz Night bonus events | `QUIZ_BONUS_EVENTS` in `js/data-quiz.js` — add a new object to the array and it's automatically in rotation; the max bonus slot count is `MAX_BONUS` in `js/quiz.js` |
+| Tie-breaker challenges | `js/data-tiebreaker.js` — `TIEBREAKER_CHALLENGES` lists the six challenge types, backed by the `TIEBREAKER_TRIVIA` / `TIEBREAKER_ESTIMATES` / `TIEBREAKER_CATEGORIES` / `TIEBREAKER_PHYSICAL` content banks |
 
 ---
 
@@ -486,6 +512,12 @@ Every game's setup screen has the same <strong>Timer</strong> block — flip its
 <summary><strong>I want a longer or shorter timer than the default</strong></summary>
 
 Open the <strong>Timer</strong> block on any setup screen — tap a preset chip, or type any custom duration (5–600 seconds) into the "Custom" field. The change only applies to that game session; the recommended default shown next to the switch never changes.
+</details>
+
+<details>
+<summary><strong>The game jumped to a "It's a Tie!" screen I wasn't expecting</strong></summary>
+
+That's the universal tie-breaker — it only appears when two or more entrants finish with the same top score, and only the tied entrants play it out. Tap <strong>🤝 Accept a Shared Win</strong> anytime to skip it and keep the tie standing.
 </details>
 
 ---

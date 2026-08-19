@@ -17,7 +17,8 @@
   const screens = {
     setup: document.getElementById("screen-setup"),
     play: document.getElementById("screen-play"),
-    summary: document.getElementById("screen-summary")
+    summary: document.getElementById("screen-summary"),
+    tiebreak: document.getElementById("screen-tiebreak")
   };
   const showScreen = createScreenManager(screens);
 
@@ -157,18 +158,36 @@
   function goToSummary() {
     timer.hide();
     document.getElementById("summary-text").textContent = `You made it through ${state.picsPlayed} picture${state.picsPlayed === 1 ? "" : "s"}.`;
-    const ranked = teamScoreboard.getTeams().slice().sort((a, b) => b.score - a.score);
+    resolveSession({
+      entrants: teamScoreboard.getTeams(),
+      mount: document.getElementById("tiebreak-mount"),
+      onEnter: () => showScreen("tiebreak"),
+      onResolved: (result) => {
+        renderFinalScores(result);
+        showScreen("summary");
+      }
+    });
+  }
+
+  function renderFinalScores(result) {
     const medals = ["🥇", "🥈", "🥉"];
     const finalScores = document.getElementById("final-scores");
     finalScores.innerHTML = "";
-    ranked.forEach((team, i) => {
+    result.ranked.forEach((team, i) => {
       const row = document.createElement("div");
       row.className = "result-row";
-      if (i === 0 && team.score > 0) row.classList.add("result-winner");
+      if (result.winner === team && team.score > 0) row.classList.add("result-winner");
       row.innerHTML = `<span class="result-medal">${medals[i] || "🎗️"}</span><span class="result-swatch" style="background:${team.color}"></span><span class="result-name">${team.name}</span><span class="result-score">${team.score} pts</span>`;
       finalScores.appendChild(row);
     });
-    showScreen("summary");
+    if (result.tiebreak) {
+      const note = document.createElement("p");
+      note.className = "screen-sub";
+      note.textContent = result.shared
+        ? "The tie held — the group agreed to share the win."
+        : `Tie-breaker settled it in ${result.tiebreak.rounds} round${result.tiebreak.rounds === 1 ? "" : "s"}.`;
+      finalScores.appendChild(note);
+    }
   }
 
   document.getElementById("btn-end-session").addEventListener("click", goToSummary);

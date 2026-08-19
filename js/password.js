@@ -23,7 +23,8 @@
     setup: document.getElementById("screen-setup"),
     pass: document.getElementById("screen-pass"),
     clue: document.getElementById("screen-clue"),
-    summary: document.getElementById("screen-summary")
+    summary: document.getElementById("screen-summary"),
+    tiebreak: document.getElementById("screen-tiebreak")
   };
   const showScreen = createScreenManager(screens);
 
@@ -187,20 +188,37 @@
 
   // ---------- Summary ----------
   function showSummary() {
-    const ranked = state.names
-      .map((name, i) => ({ name, score: state.scores[i] }))
-      .sort((a, b) => b.score - a.score);
+    const ranked = state.names.map((name, i) => ({ name, score: state.scores[i] }));
+    resolveSession({
+      entrants: ranked,
+      mount: document.getElementById("tiebreak-mount"),
+      onEnter: () => showScreen("tiebreak"),
+      onResolved: (result) => {
+        renderFinalScores(result);
+        showScreen("summary");
+      }
+    });
+  }
+
+  function renderFinalScores(result) {
     const medals = ["🥇", "🥈", "🥉"];
     const finalScores = document.getElementById("final-scores");
     finalScores.innerHTML = "";
-    ranked.forEach((entry, i) => {
+    result.ranked.forEach((entry, i) => {
       const row = document.createElement("div");
       row.className = "result-row";
-      if (i === 0 && entry.score > 0) row.classList.add("result-winner");
+      if (result.winner === entry && entry.score > 0) row.classList.add("result-winner");
       row.innerHTML = `<span class="result-medal">${medals[i] || "🎗️"}</span><span class="result-name">${entry.name}</span><span class="result-score">${entry.score} pt${entry.score === 1 ? "" : "s"}</span>`;
       finalScores.appendChild(row);
     });
-    showScreen("summary");
+    if (result.tiebreak) {
+      const note = document.createElement("p");
+      note.className = "screen-sub";
+      note.textContent = result.shared
+        ? "The tie held — the group agreed to share the win."
+        : `Tie-breaker settled it in ${result.tiebreak.rounds} round${result.tiebreak.rounds === 1 ? "" : "s"}.`;
+      finalScores.appendChild(note);
+    }
   }
 
   document.getElementById("btn-play-again").addEventListener("click", () => {
