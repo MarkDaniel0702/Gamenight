@@ -15,6 +15,9 @@
 A colorful, browser-based party game platform — **11 games**, one shared screen, **no dedicated host required**. Gather a group around a phone, tablet, or laptop and pick from social deduction, trivia, voting games, and classic party favorites. The app handles turns, customizable timers, randomization, hidden information, and results on its own.
 
 > [!TIP]
+> **▶️ Play now:** [markdaniel0702.github.io/PARTY-PILOT](https://markdaniel0702.github.io/PARTY-PILOT/) — free, no sign-up, works on any device. See [🌐 Deployment](#-deployment) below for hosting details.
+
+> [!TIP]
 > Never played a game here before? Every setup screen has a collapsible **"❓ How does this work?"** box with the full rules — nobody needs to read this README to play.
 
 ---
@@ -340,6 +343,58 @@ npx serve .
 ```
 
 No accounts, backend, or internet connection are required to play — the only thing that needs the internet is loading the Google Fonts on first visit.
+
+---
+
+## 🌐 Deployment
+
+**Live site:** https://markdaniel0702.github.io/PARTY-PILOT/
+
+The site is deployed on **GitHub Pages**, serving straight from this repository's `main` branch — free, HTTPS by default, no account needed to play, and no backend to provision, since the whole project is static HTML/CSS/JS with zero dependencies and zero build step.
+
+### Build settings
+
+There's nothing to build. GitHub Pages is configured to publish the repository as-is:
+
+| Setting | Value |
+|---|---|
+| Source | Deploy from a branch |
+| Branch | `main` |
+| Folder | `/` (root) |
+| Build command | None |
+| Environment variables | None |
+
+### Connecting the repository (one-time setup)
+
+1. Push the repo to GitHub (already done for this project).
+2. In the repo, go to **Settings → Pages**.
+3. Under **Build and deployment → Source**, choose **Deploy from a branch**.
+4. Set **Branch** to `main` and the folder to `/ (root)`, then **Save**.
+5. GitHub publishes the site at `https://<username>.github.io/<repo-name>/` within about a minute, and **Enforce HTTPS** is on by default.
+
+### Redeploying after changes
+
+No redeploy step is needed — GitHub Pages rebuilds automatically on every push to `main`:
+
+```bash
+git add .
+git commit -m "Your change"
+git push origin main
+```
+
+The live site updates within roughly a minute of the push finishing.
+
+### Free-tier alternatives
+
+If this project ever needs something GitHub Pages doesn't offer (custom edge functions, a real backend, etc.), it's still a static site, so it can move to any of these free platforms with zero code changes — set the build command to none and the output/publish directory to the repository root:
+
+| Platform | Notes |
+|---|---|
+| Cloudflare Pages | Free, unlimited bandwidth, GitHub auto-deploy, `pages.dev` URL — requires signing up for a Cloudflare account and connecting GitHub via OAuth |
+| Netlify | Free tier, GitHub auto-deploy, `netlify.app` URL — requires a Netlify account |
+| Vercel | Free tier, GitHub auto-deploy, `vercel.app` URL — requires a Vercel account |
+
+GitHub Pages was chosen over these because it needs no new third-party account at all — it publishes straight from the GitHub account that already hosts the code.
 
 ---
 
