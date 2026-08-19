@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Categories &mdash; Game Night</title>
+<title>Categories &mdash; Blunt Rotation</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/party.css">
 <link rel="stylesheet" href="css/categories.css">
+<link rel="stylesheet" href="css/timer.css">
 </head>
 <body>
 
 <header class="topbar">
-  <a href="index.html" class="back-link">&larr; Game Night</a>
+  <a href="index.html" class="back-link">&larr; Blunt Rotation</a>
   <span class="topbar-title">🧠 CATEGORIES</span>
 </header>
 
@@ -51,10 +52,15 @@
     </div>
 
     <div class="block">
-      <label class="timer-toggle">
+      <label class="toggle-check">
         <input type="checkbox" id="elimination-toggle" checked>
         <span>🎯 Elimination Mode (last player standing wins)</span>
       </label>
+    </div>
+
+    <div class="block">
+      <h2 class="block-label">Timer</h2>
+      <div id="timer-setup"></div>
     </div>
 
     <button type="button" id="btn-start" class="btn-primary">Start &rarr;</button>
@@ -64,7 +70,7 @@
   <section id="screen-play" class="screen">
     <p class="cat-banner">🧠 Category: <span id="category-name">Food</span></p>
     <p id="turn-status" class="turn-banner">Player 1's turn!</p>
-    <span id="round-timer" class="timer-badge">⏱️ 10s</span>
+    <div id="game-timer" class="timer-mount"></div>
 
     <div class="reveal-card cat-card">
       <p class="reveal-footnote">Say something that fits the category out loud!</p>

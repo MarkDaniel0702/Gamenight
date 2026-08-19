@@ -3,7 +3,6 @@
 
   const MIN_PLAYERS = 2;
   const MAX_PLAYERS = 10;
-  const TURN_SECONDS = 10;
 
   const state = {
     names: [],
@@ -34,14 +33,17 @@
   const eliminationToggle = document.getElementById("elimination-toggle");
   const categoryNameEl = document.getElementById("category-name");
   const turnStatusEl = document.getElementById("turn-status");
-  const roundTimerEl = document.getElementById("round-timer");
 
-  const timer = createTimer({
-    seconds: TURN_SECONDS,
-    onTick: (s) => {
-      roundTimerEl.textContent = `⏱️ ${s}s`;
-      roundTimerEl.classList.toggle("timer-urgent", s <= 3 && s > 0);
-    },
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per turn",
+    recommended: 10,
+    presets: [5, 10, 15, 20],
+    defaultEnabled: true
+  });
+
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
     onExpire: () => handleStuck()
   });
 
@@ -64,7 +66,11 @@
   function startTurn() {
     const idx = state.activeIndices[state.turnPos];
     turnStatusEl.textContent = `🎙️ ${state.names[idx]}'s turn!`;
-    timer.start();
+    if (timerSetup.isEnabled()) {
+      timer.start(timerSetup.getSeconds());
+    } else {
+      timer.hide();
+    }
   }
 
   function advanceTurn() {
@@ -73,7 +79,7 @@
   }
 
   function handleStuck() {
-    timer.stop();
+    timer.hide();
     if (state.eliminationMode) {
       const outIdx = state.activeIndices[state.turnPos];
       state.activeIndices.splice(state.turnPos, 1);
@@ -89,7 +95,7 @@
   }
 
   document.getElementById("btn-nailed-it").addEventListener("click", () => {
-    timer.stop();
+    timer.hide();
     advanceTurn();
   });
 
@@ -105,7 +111,7 @@
 
   // ---------- Summary ----------
   function showSummary(winnerName) {
-    timer.stop();
+    timer.hide();
     const titleEl = document.getElementById("summary-title");
     const textEl = document.getElementById("summary-text");
     if (winnerName) {

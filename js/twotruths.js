@@ -35,6 +35,14 @@
     initialCount: 4
   });
 
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "for discussion & voting",
+    recommended: 60,
+    presets: [30, 45, 60, 90],
+    defaultEnabled: false
+  });
+
   document.getElementById("btn-start").addEventListener("click", () => {
     state.names = roster.getNames();
     state.scores = state.names.map(() => 0);
@@ -131,6 +139,11 @@
   const voteStatus = document.getElementById("vote-status");
   const voteStatementCards = document.getElementById("vote-statement-cards");
 
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
+    onExpire: () => showRoundResults()
+  });
+
   document.getElementById("btn-start-voting").addEventListener("click", () => {
     state.voterOrder = state.names.map((_, i) => i).filter((i) => i !== state.turnIndex);
     state.voterPos = 0;
@@ -147,6 +160,7 @@
     });
 
     showView(viewVoting);
+    if (timerSetup.isEnabled()) timer.start(timerSetup.getSeconds());
     updateVoteStatus();
   });
 
@@ -172,6 +186,7 @@
   const scoreboardEl = document.getElementById("scoreboard");
 
   function showRoundResults() {
+    timer.hide();
     state.roundsPlayed++;
 
     let correctCount = 0;
@@ -233,7 +248,10 @@
     showScreen("summary");
   }
 
-  document.getElementById("btn-end-session").addEventListener("click", goToSummary);
+  document.getElementById("btn-end-session").addEventListener("click", () => {
+    timer.hide();
+    goToSummary();
+  });
 
   document.getElementById("btn-play-again").addEventListener("click", () => {
     state.scores = state.names.map(() => 0);

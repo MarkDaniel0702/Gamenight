@@ -3,14 +3,13 @@
 
   const MIN_PLAYERS = 3;
   const MAX_PLAYERS = 10;
-  const TIMER_SECONDS = 60;
+  const TIMER_RECOMMENDED = 120;
 
   const state = {
     category: null,
     names: [],
     characters: [],
     turnIndex: 0,
-    timerEnabled: true,
     lastResult: ""
   };
 
@@ -25,7 +24,14 @@
   // ---------- Setup ----------
   const categoryGrid = document.getElementById("category-grid");
   const btnStart = document.getElementById("btn-start");
-  const timerToggle = document.getElementById("timer-toggle");
+
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per player",
+    recommended: TIMER_RECOMMENDED,
+    presets: [60, 90, 120, 180],
+    defaultEnabled: true
+  });
 
   function makeCategoryCard(name) {
     const btn = document.createElement("button");
@@ -64,7 +70,6 @@
   }
 
   btnStart.addEventListener("click", () => {
-    state.timerEnabled = timerToggle.checked;
     dealCharacters();
     state.turnIndex = 0;
     state.lastResult = "";
@@ -92,14 +97,9 @@
   // ---------- Reveal / guessing ----------
   const guesserNameEl = document.getElementById("guesser-name");
   const characterTextEl = document.getElementById("character-text");
-  const revealTimerEl = document.getElementById("reveal-timer");
 
-  const timer = createTimer({
-    seconds: TIMER_SECONDS,
-    onTick: (s) => {
-      revealTimerEl.textContent = `⏱️ ${s}s`;
-      revealTimerEl.classList.toggle("timer-urgent", s <= 10 && s > 0);
-    },
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
     onExpire: () => finishTurn(`⏰ Time's up! The answer was ${state.characters[state.turnIndex]}.`)
   });
 
@@ -107,21 +107,20 @@
     guesserNameEl.textContent = state.names[state.turnIndex];
     characterTextEl.textContent = state.characters[state.turnIndex];
     showScreen("reveal");
-    if (state.timerEnabled) {
-      revealTimerEl.classList.remove("hidden");
-      timer.start();
+    if (timerSetup.isEnabled()) {
+      timer.start(timerSetup.getSeconds());
     } else {
-      revealTimerEl.classList.add("hidden");
+      timer.hide();
     }
   });
 
   document.getElementById("btn-got-it").addEventListener("click", () => {
-    timer.stop();
+    timer.hide();
     finishTurn(`🎉 ${state.names[state.turnIndex]} got it!`);
   });
 
   document.getElementById("btn-give-up").addEventListener("click", () => {
-    timer.stop();
+    timer.hide();
     finishTurn(`The answer was ${state.characters[state.turnIndex]}.`);
   });
 

@@ -2,7 +2,6 @@
   "use strict";
 
   const BLUR_STEPS = [20, 12, 6, 0];
-  const STEP_SECONDS = 4;
   const AWARD_POINTS = 10;
   const MAX_TEAMS = 6;
 
@@ -12,7 +11,6 @@
     usedIndices: new Set(),
     currentPic: null,
     revealLevel: 0,
-    timerEnabled: true,
     picsPlayed: 0
   };
 
@@ -57,12 +55,17 @@
   teamScoreboard.addTeam("Team 1");
   teamScoreboard.addTeam("Team 2");
 
-  const timerToggle = document.getElementById("timer-toggle");
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per step",
+    recommended: 4,
+    presets: [3, 4, 6, 8],
+    defaultEnabled: true
+  });
 
   btnStart.addEventListener("click", () => {
     state.pool = PICTUREGUESS_CATEGORIES[state.category];
     state.usedIndices = new Set();
-    state.timerEnabled = timerToggle.checked;
     state.picsPlayed = 0;
     document.getElementById("category-label").textContent = state.category;
     teamScoreboard.renderScoreboard();
@@ -72,7 +75,6 @@
 
   // ---------- Play ----------
   const pictureEmojiEl = document.getElementById("picture-emoji");
-  const sharpenTimerEl = document.getElementById("sharpen-timer");
   const btnSharpen = document.getElementById("btn-sharpen");
   const btnRevealAnswer = document.getElementById("btn-reveal-answer");
   const answerBlock = document.getElementById("answer-block");
@@ -80,12 +82,8 @@
   const awardRow = document.getElementById("award-row");
   const btnNextPicture = document.getElementById("btn-next-picture");
 
-  const timer = createTimer({
-    seconds: STEP_SECONDS,
-    onTick: (s) => {
-      sharpenTimerEl.textContent = `⏱️ ${s}s`;
-      sharpenTimerEl.classList.toggle("timer-urgent", s <= 1 && s > 0);
-    },
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
     onExpire: () => sharpen()
   });
 
@@ -95,11 +93,10 @@
   }
 
   function startStepTimer() {
-    if (state.timerEnabled && state.revealLevel < BLUR_STEPS.length - 1) {
-      sharpenTimerEl.classList.remove("hidden");
-      timer.start();
+    if (timerSetup.isEnabled() && state.revealLevel < BLUR_STEPS.length - 1) {
+      timer.start(timerSetup.getSeconds());
     } else {
-      sharpenTimerEl.classList.add("hidden");
+      timer.hide();
     }
   }
 
@@ -120,7 +117,7 @@
   }
 
   function sharpen() {
-    timer.stop();
+    timer.hide();
     if (state.revealLevel < BLUR_STEPS.length - 1) {
       state.revealLevel++;
       applyBlur();
@@ -130,8 +127,7 @@
   btnSharpen.addEventListener("click", sharpen);
 
   function revealAnswer() {
-    timer.stop();
-    sharpenTimerEl.classList.add("hidden");
+    timer.hide();
     state.picsPlayed++;
     state.revealLevel = BLUR_STEPS.length - 1;
     applyBlur();
@@ -159,7 +155,7 @@
 
   // ---------- Summary ----------
   function goToSummary() {
-    timer.stop();
+    timer.hide();
     document.getElementById("summary-text").textContent = `You made it through ${state.picsPlayed} picture${state.picsPlayed === 1 ? "" : "s"}.`;
     const ranked = teamScoreboard.getTeams().slice().sort((a, b) => b.score - a.score);
     const medals = ["🥇", "🥈", "🥉"];

@@ -4,16 +4,15 @@
   const TEAM_COLORS = ["#ffcb3c", "#31e0c9", "#ff6b81", "#9b8bff", "#7dd956", "#ff9f4a"];
   const MAX_TEAMS = 6;
   const POINT_VALUES = [100, 200, 300, 400, 500];
-  const ANSWER_TIMER_SECONDS = 20;
+  const ANSWER_TIMER_RECOMMENDED = 30;
 
   const state = {
     theme: null,
     teams: [], // { name, score, color }
     answered: new Set(), // "categoryIndex-points"
     current: null, // { catIndex, points, category, question }
-    mode: "automated", // "automated" (auto turn order + timer) or "gamemaster" (manual pacing)
-    turnIndex: 0,
-    timerHandle: null
+    mode: "automated", // "automated" (timer on by default) or "gamemaster" (timer off by default)
+    turnIndex: 0
   };
 
   const screens = {
@@ -132,8 +131,8 @@
   // ---------- Setup: play style (host-optional) ----------
   const modeGrid = document.getElementById("mode-grid");
   const MODES = [
-    { id: "automated", icon: "🤖", name: "Automated", desc: "Turn order and a 20-second answer timer run automatically — everyone just plays." },
-    { id: "gamemaster", icon: "🎙️", name: "Game Master", desc: "One person controls the pace manually — no timer, reveal answers whenever ready." }
+    { id: "automated", icon: "🤖", name: "Automated", desc: "Turn order runs automatically, with a customizable answer timer (30s recommended) — everyone just plays." },
+    { id: "gamemaster", icon: "🎙️", name: "Game Master", desc: "One person controls the pace manually — timer off by default, reveal answers whenever ready." }
   ];
 
   function renderModeGrid() {
@@ -148,10 +147,23 @@
         state.mode = m.id;
         document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("selected"));
         btn.classList.add("selected");
+        const enableInput = document.querySelector("#timer-setup .ts-enable");
+        if (enableInput) {
+          enableInput.checked = m.id === "automated";
+          enableInput.dispatchEvent(new Event("change"));
+        }
       });
       modeGrid.appendChild(btn);
     });
   }
+
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per question",
+    recommended: ANSWER_TIMER_RECOMMENDED,
+    presets: [15, 20, 30, 45],
+    defaultEnabled: true
+  });
 
   btnStart.addEventListener("click", () => {
     state.answered = new Set();
@@ -245,7 +257,6 @@
   // ---------- Question overlay ----------
   const overlay = document.getElementById("overlay");
   const qMeta = document.getElementById("q-meta");
-  const qTimerEl = document.getElementById("q-timer");
   const qText = document.getElementById("q-text");
   const answerBlock = document.getElementById("answer-block");
   const aText = document.getElementById("a-text");
@@ -253,33 +264,20 @@
   const awardRow = document.getElementById("award-row");
   const btnBackBoard = document.getElementById("btn-back-board");
 
+  const questionTimer = createGameTimer({
+    mount: document.getElementById("game-timer"),
+    onExpire: () => revealAnswer()
+  });
+
   function stopTimer() {
-    if (state.timerHandle) {
-      clearInterval(state.timerHandle);
-      state.timerHandle = null;
-    }
+    questionTimer.hide();
   }
 
   function startAnswerTimer() {
     stopTimer();
-    if (state.mode !== "automated") {
-      qTimerEl.classList.add("hidden");
-      return;
+    if (timerSetup.isEnabled()) {
+      questionTimer.start(timerSetup.getSeconds());
     }
-    let secondsLeft = ANSWER_TIMER_SECONDS;
-    qTimerEl.classList.remove("hidden");
-    qTimerEl.classList.remove("q-timer-urgent");
-    qTimerEl.textContent = `⏱️ ${secondsLeft}s`;
-    state.timerHandle = setInterval(() => {
-      secondsLeft--;
-      if (secondsLeft <= 5) qTimerEl.classList.add("q-timer-urgent");
-      if (secondsLeft <= 0) {
-        stopTimer();
-        revealAnswer();
-        return;
-      }
-      qTimerEl.textContent = `⏱️ ${secondsLeft}s`;
-    }, 1000);
   }
 
   function openQuestion(catIndex, points) {
@@ -307,7 +305,6 @@
 
   function revealAnswer() {
     stopTimer();
-    qTimerEl.classList.add("hidden");
     answerBlock.classList.remove("hidden");
     btnShowAnswer.classList.add("hidden");
     awardRow.classList.remove("hidden");

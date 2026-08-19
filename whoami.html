@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Who Am I? &mdash; Game Night</title>
+<title>Who Am I? &mdash; Blunt Rotation</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤔</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/party.css">
 <link rel="stylesheet" href="css/whoami.css">
+<link rel="stylesheet" href="css/timer.css">
 </head>
 <body>
 
 <header class="topbar">
-  <a href="index.html" class="back-link">&larr; Game Night</a>
+  <a href="index.html" class="back-link">&larr; Blunt Rotation</a>
   <span class="topbar-title">🤔 WHO AM I?</span>
 </header>
 
@@ -57,10 +58,8 @@
     </div>
 
     <div class="block">
-      <label class="timer-toggle">
-        <input type="checkbox" id="timer-toggle" checked>
-        <span>⏱️ 60-second timer per player (Automated)</span>
-      </label>
+      <h2 class="block-label">4. Timer</h2>
+      <div id="timer-setup"></div>
     </div>
 
     <button type="button" id="btn-start" class="btn-primary" disabled>Deal the Identities &rarr;</button>
@@ -81,7 +80,7 @@
   <!-- REVEAL / GUESSING -->
   <section id="screen-reveal" class="screen">
     <p class="screen-sub">Hold the screen up for the group &mdash; <span id="guesser-name">Player 1</span> shouldn't look!</p>
-    <span id="reveal-timer" class="timer-badge hidden">⏱️ 60s</span>
+    <div id="game-timer" class="timer-mount"></div>
     <div class="reveal-card">
       <span class="reveal-label">WHO AM I?</span>
       <p class="reveal-text" id="character-text">Character Name</p>

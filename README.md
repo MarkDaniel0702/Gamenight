@@ -1,4 +1,4 @@
-# 🎮 Game Night
+# 🎮 Blunt Rotation Party Night
 
 <p>
   <img alt="No build step" src="https://img.shields.io/badge/build-none-brightgreen">
@@ -8,9 +8,10 @@
   <img alt="Games" src="https://img.shields.io/badge/games-11-purple">
   <img alt="Spy Word themes" src="https://img.shields.io/badge/spy%20word%20themes-57-e8324f">
   <img alt="Quiz Night themes" src="https://img.shields.io/badge/quiz%20night%20themes-17-ffcb3c">
+  <img alt="Customizable timers" src="https://img.shields.io/badge/timers-customizable-2fd67f">
 </p>
 
-A colorful, browser-based party game platform — **11 games**, one shared screen, **no dedicated host required**. Gather a group around a phone, tablet, or laptop and pick from social deduction, trivia, voting games, and classic party favorites. The app handles turns, timers, randomization, hidden information, and results on its own.
+A colorful, browser-based party game platform — **11 games**, one shared screen, **no dedicated host required**. Gather a group around a phone, tablet, or laptop and pick from social deduction, trivia, voting games, and classic party favorites. The app handles turns, customizable timers, randomization, hidden information, and results on its own.
 
 > [!TIP]
 > Never played a game here before? Every setup screen has a collapsible **"❓ How does this work?"** box with the full rules — nobody needs to read this README to play.
@@ -25,7 +26,7 @@ A colorful, browser-based party game platform — **11 games**, one shared scree
 | 🎙️ **Game Master optional** | Prefer a human running the show for the games where that helps? Several have a manual mode too. |
 | 🎲 **11 games, 3 categories** | Word & Deduction, Trivia & Knowledge, and Party & Voting — something for every group. |
 | 🎨 **Deep theme libraries** | 57 Spy Word themes, 17 Quiz Night themes, plus curated category sets for every other game. |
-| ⏱️ **Built-in timers** | Countdown timers keep rounds moving without anyone watching a clock. |
+| ⏱️ **Universal customizable timers** | Every game shares one timer system — a recommended duration you can override with a preset or a custom value, Start/Pause/Resume/Reset controls, and a switch to turn it off entirely where a timer isn't required. |
 | 🏁 **Automatic results** | Boards, votes, and scoreboards resolve themselves the moment a round finishes. |
 | 📱 **Fully responsive** | Works on a laptop, tablet, or phone passed around a table. |
 | 🔒 **Private by design** | No accounts, no server, nothing leaves your browser. |
@@ -57,7 +58,7 @@ A social deduction word game. Almost every player secretly receives the same **m
 - Pick one of **57 specific themes** (e.g. "Naruto Characters," not just "Anime"), set the player count, and optionally name your players.
 - The app randomly picks a word pair and randomly assigns exactly one Spy.
 - Each player gets a private "Pass the device to [Name]" screen, reveals their word, then hides it before passing on.
-- An optional 90-second discussion timer keeps the debate moving.
+- An optional discussion timer (60s recommended, fully customizable) keeps the debate moving.
 - Anyone taps **Reveal the Spy** when the group's ready to vote — no permanent host needed, since the "host" role is just whoever's holding the device.
 
 ---
@@ -69,7 +70,7 @@ A Jeopardy-style trivia board with **17 themes** and a 100–500 point system. P
 - Pick a theme, add up to 6 teams, and choose **🤖 Automated** or **🎙️ Game Master** mode.
 - A turn banner shows whose turn it is to pick — the app tracks it, nobody has to referee.
 - Tiles lock the instant they're picked, so nothing gets answered twice by accident.
-- The answer stays hidden until "Show Answer" — or the 20-second timer runs out, in Automated mode.
+- The answer stays hidden until "Show Answer" — or the timer (30s recommended, customizable) runs out, in Automated mode.
 - Any team taps their own **+points** button when they get it right.
 - Once every tile is answered, a **🏁 results screen** appears automatically with final standings.
 
@@ -81,7 +82,7 @@ Each player is secretly assigned a character — a celebrity, superhero, anime c
 
 - Categories: Celebrities, Fictional Characters, Superheroes, Anime Characters, Filipino Celebrities, Historical Figures.
 - A "look away" screen makes sure the player doesn't peek before their identity is shown to everyone else.
-- **🤖 Automated:** a 60-second timer per player. **🎙️ Turn it off** for untimed, casual rounds.
+- **🤖 Automated:** a timer per player (120s recommended, customizable). **🎙️ Turn it off** for untimed, casual rounds.
 - Tap **Got It!** when guessed correctly, or **Reveal & Skip** to move on — the turn passes automatically either way.
 
 ---
@@ -92,7 +93,7 @@ The classic clue-giving game. One player privately sees a secret word and gives 
 
 - Categories: Everyday Objects, Animals, Food, Movies & TV, Famous Places, School & Work.
 - Set a configurable clue limit (3–8) at setup — fewer clues used means more points when guessed correctly.
-- **🤖 Automated:** a 15-second timer per clue, auto-advancing when it runs out. **🎙️ Turn it off** for self-paced clue-giving.
+- **🤖 Automated:** a timer per clue (15s recommended, customizable), auto-advancing when it runs out. **🎙️ Turn it off** for self-paced clue-giving.
 - The clue-giver role rotates automatically every round, with running scores shown at the end.
 
 ---
@@ -102,7 +103,7 @@ The classic clue-giving game. One player privately sees a secret word and gives 
 Classic rapid-fire: a random category appears, and players take turns naming something that fits before the timer runs out.
 
 - 16 built-in categories — Food, Animals, Countries, Movies, Anime, Philippine Culture, Professions, Sports, and more.
-- A 10-second timer runs per turn; the group self-referees with **Nailed It!** / **Stuck or Repeated**.
+- A timer runs per turn (10s recommended, customizable, can be switched off); the group self-referees with **Nailed It!** / **Stuck or Repeated**.
 - **🎯 Elimination Mode** (default) knocks a stuck player out — last one standing wins. Turn it off for a casual, no-pressure round.
 - **🔄 New Category** anytime, or **🏁 End Round** whenever the group's had enough.
 
@@ -113,7 +114,7 @@ Classic rapid-fire: a random category appears, and players take turns naming som
 Since this is a static site with no audio hosting, songs are guessed through **progressive clues** instead of audio clips: an emoji rebus first, then a description, then an artist/era hint.
 
 - Categories: OPM, K-Pop, Pop, Rock, Disney, Anime Songs, 2000s Music.
-- **🤖 Automated:** a new clue reveals every 12 seconds. Manual **Reveal Next Clue** and **Reveal Answer** buttons always work too.
+- **🤖 Automated:** a new clue reveals on a timer (12s recommended, customizable). Manual **Reveal Next Clue** and **Reveal Answer** buttons always work too.
 - Optional team scoring — add teams to track points, or skip it and just play for fun.
 
 ---
@@ -123,7 +124,7 @@ Since this is a static site with no audio hosting, songs are guessed through **p
 Since this is a static site with no image hosting (and no way to license real photos of celebrities, logos, or movie stills), each round shows a large **emoji picture** that starts blurry and sharpens into focus over time.
 
 - Categories: Places, Food, Animals, Movies, Anime, Celebrities, Philippine Locations, Logos.
-- **🤖 Automated:** the picture sharpens a step every 4 seconds. Tap **🔍 Sharpen** anytime to speed it up manually.
+- **🤖 Automated:** the picture sharpens a step on a timer (4s recommended, customizable). Tap **🔍 Sharpen** anytime to speed it up manually.
 - Optional team scoring, same as Guess the Song.
 
 ---
@@ -136,6 +137,7 @@ Each turn, one player shares three statements — two true, one false — and th
 - Every other player votes in turn on which statement they think is false.
 - The app reveals the lie automatically, tallies who guessed right, and awards points (correct guessers +1, and the storyteller +1 per person they fooled).
 - The storyteller role rotates every round.
+- **Optional timer** (60s recommended, off by default) covers discussion and voting together — turn it on at setup if your group wants the pressure.
 
 ---
 
@@ -146,6 +148,7 @@ Vote on funny, difficult, or downright extreme dilemmas.
 - Categories: Funny, Difficult, Food, School, Random, Extreme.
 - Each player votes A or B in turn; once everyone's in, a results bar chart appears automatically.
 - **Skip** any prompt that isn't for your group — fully automatic, no host needed at all.
+- **Optional timer** (30s recommended, off by default) per question — a player who doesn't vote in time is skipped automatically.
 
 ---
 
@@ -156,6 +159,7 @@ Vote on funny, difficult, or downright extreme dilemmas.
 - Categories: Friends, School, Funny, Random, Future, Work.
 - Each player votes for a name from the roster in turn; results reveal automatically, ranked with medals for the top picks.
 - Fully automatic — no host, no manual tallying.
+- **Optional timer** (30s recommended, off by default) per vote — a player who doesn't vote in time is skipped automatically.
 
 ---
 
@@ -164,7 +168,7 @@ Vote on funny, difficult, or downright extreme dilemmas.
 A player privately sees a word or phrase and acts it out — no talking — while the group shouts guesses.
 
 - Categories: Movies, Animals, Actions, Professions, Food, Anime, Filipino Culture.
-- **🤖 Automated:** a 60-second timer per round. **🎙️ Turn it off** for untimed acting.
+- **🤖 Automated:** a timer per round (60s recommended, customizable). **🎙️ Turn it off** for untimed acting.
 - Tap **Correct!** the moment it's guessed (+1 point for the actor) or **Skip** if time's tight — either way, the turn rotates automatically.
 
 ---
@@ -176,12 +180,40 @@ Several games can run themselves, or hand control to a human — picked once at 
 | Mode | What happens |
 |---|---|
 | 🤖 **Automated** *(default)* | Timers run on their own, and turns/reveals advance automatically when time's up. |
-| 🎙️ **Game Master** | Timers are off — one person controls pacing manually, revealing answers or advancing turns whenever the group's ready. |
+| 🎙️ **Game Master** | Timer defaults to off — one person controls pacing manually, revealing answers or advancing turns whenever the group's ready. |
 
 > [!TIP]
-> Switching modes doesn't change *who* can click what — every button stays available to every player either way. Game Master mode just turns off the automatic timer so one person can control pacing.
+> Switching modes doesn't change *who* can click what — every button stays available to every player either way. Game Master mode just turns the timer off by default so one person can control pacing; the timer switch on the setup screen always has the final say.
 
-Games built around **voting** (Would You Rather?, Most Likely To, Two Truths and a Lie) don't need this toggle at all — there's no pacing decision to hand off, so they're automatic by nature.
+Quiz Night surfaces this as a two-button picker at setup. Every other timed game expresses the same idea through its own Timer switch — see below.
+
+---
+
+## ⏱️ Timer System
+
+One universal timer component is shared by every game — including Spy Word and Quiz Night. Each game's setup screen shows a **Timer** block with:
+
+- A recommended duration, shown up front so you know the default before you touch anything.
+- Preset chips **and** a custom numeric input — pick a preset or type any duration in seconds.
+- A switch to turn the timer off entirely, for games where the group would rather self-pace.
+
+During play, the timer appears as a countdown badge with **Pause**, **Resume**, and **Reset** controls. It shifts to an amber "almost out" warning partway through, then red with a pulse in the final stretch — both stages scale with whatever duration you picked, not a fixed second count. When time runs out, the game automatically advances (next player, next clue, reveal the answer, etc.) exactly as it would if a Game Master called time.
+
+| Game | Timer unit | Recommended | On by default |
+|---|---|---|:---:|
+| 🕵️ Spy Word | discussion | 60s | ✅ |
+| ❓ Quiz Night | per question | 30s | ✅ |
+| 🤔 Who Am I? | per player | 120s | ✅ |
+| 🔐 Password | per clue | 15s | ✅ |
+| 🧠 Categories | per turn | 10s | ✅ |
+| 🎭 Charades | per round | 60s | ✅ |
+| 🎵 Guess the Song | per clue reveal | 12s | ✅ |
+| 🖼️ Picture Guess | per sharpen step | 4s | ✅ |
+| 2️⃣ Two Truths and a Lie | discussion & voting | 60s | ❌ *(opt-in)* |
+| 🤷 Would You Rather? | per question | 30s | ❌ *(opt-in)* |
+| 👥 Most Likely To | voting | 30s | ❌ *(opt-in)* |
+
+The three voting games ship with the timer off since they've always self-paced — flip the switch at setup if your group wants the pressure. Every other game ships with a sensible default on, and can be switched off the same way.
 
 ---
 
@@ -226,7 +258,7 @@ Each remaining game has its own curated category list — see that game's sectio
 
 ## ⚙️ Installation
 
-Game Night has **zero dependencies and no build step** — it's plain HTML, CSS, and JavaScript.
+Blunt Rotation Party Night has **zero dependencies and no build step** — it's plain HTML, CSS, and JavaScript.
 
 ```bash
 # Just get the files — nothing to install
@@ -266,23 +298,26 @@ Gamenight/
 │   ├── style.css             Homepage design
 │   ├── spy.css / quiz.css    Spy Word / Quiz Night styles (bespoke themes)
 │   ├── party.css             Shared component styles for the 9 party games
+│   ├── timer.css             Universal timer widget styles, loaded by all 11 games
 │   └── <game>.css            Each party game's own palette + small bespoke touches
 ├── js/
-│   ├── spy.js / quiz.js      Spy Word / Quiz Night logic (self-contained, untouched by the rest)
+│   ├── spy.js / quiz.js      Spy Word / Quiz Night logic
 │   ├── data-spy.js / data-quiz.js
-│   ├── shared.js             Reusable helpers for the 9 party games (see below)
+│   ├── shared.js             Reusable helpers for every game, including the universal timer (see below)
 │   ├── data-<game>.js        Each party game's themes/categories/content
 │   └── <game>.js             Each party game's screen logic
 └── README.md                 You are here
 ```
 
-**`js/shared.js`** is what keeps the 9 newer games consistent without duplicating code — it's loaded by every party game (never by `spy.js`/`quiz.js`, which stay fully self-contained) and provides:
+**`js/shared.js`** is what keeps all 11 games consistent without duplicating code — every game loads it, including Spy Word and Quiz Night — and provides:
 
 | Helper | What it does |
 |---|---|
 | `pickRandom(arr)` / `shuffle(arr)` | Basic randomization |
 | `pickRandomUnused(arr, usedSet)` | Picks a random item that hasn't shown up yet this session, auto-resetting once everything's been seen |
-| `createTimer({ seconds, onTick, onExpire })` | A start/stop countdown used by every timed game |
+| `createTimer({ seconds, onTick, onExpire })` | A start/stop/pause/resume countdown — the low-level engine behind every timer |
+| `createTimerSetup({ mount, unitLabel, recommended, presets, defaultEnabled })` | Renders the universal pre-game timer widget (switch, presets, custom input) used at every game's setup screen |
+| `createGameTimer({ mount, onExpire, showControls })` | Renders the universal in-game timer HUD (countdown + Pause/Resume/Reset) and drives it via `createTimer` |
 | `renderGroupedPicker(container, groups, renderCard)` | The grouped card-picker UI (themes, categories, prompt sets) |
 | `createRoster({ ... })` | A named-player list with a +/- stepper |
 | `createTeamScoreboard({ ... })` | An optional add/remove/rename team scoreboard, Quiz-Night-style |
@@ -369,7 +404,7 @@ The other nine games use much simpler, flat data files — no nested point struc
 | Spy Word / Quiz Night colors & fonts | `:root { ... }` at the top of `spy.css` / `quiz.css` |
 | Min/max players | `MIN_PLAYERS` / `MAX_PLAYERS` near the top of that game's `js/<game>.js` |
 | Max teams | `MAX_TEAMS` near the top of `js/quiz.js`, `js/guessthesong.js`, or `js/pictureguess.js` |
-| Timer lengths | Look for a `_SECONDS` constant near the top of that game's `js/<game>.js` (e.g. `ANSWER_TIMER_SECONDS`, `DISCUSSION_SECONDS`, `TIMER_SECONDS`, `CLUE_SECONDS`) |
+| A game's recommended timer / presets / default on-off | The `createTimerSetup({...})` call near the top of that game's `js/<game>.js` — `recommended`, `presets`, and `defaultEnabled` are all plain arguments. Players themselves never need to touch this: every setup screen already lets them pick a custom duration or switch the timer off. |
 | Quiz Night point tiers | `POINT_VALUES` in `js/quiz.js` — update every category's `questions` object to match |
 
 ---
@@ -403,7 +438,13 @@ Tiles lock the instant they're clicked (even before the question shows) so they 
 <details>
 <summary><strong>A timer keeps interrupting the group</strong></summary>
 
-Switch to <strong>🎙️ Game Master mode</strong> at setup on any game that offers it, or uncheck the timer toggle where one's shown (Spy Word's discussion timer, Guess the Song's clue timer, Picture Guess's sharpen timer) — all fully optional.
+Every game's setup screen has the same <strong>Timer</strong> block — flip its switch off and no countdown runs at all. On Quiz Night, picking <strong>🎙️ Game Master</strong> mode does the same thing in one tap.
+</details>
+
+<details>
+<summary><strong>I want a longer or shorter timer than the default</strong></summary>
+
+Open the <strong>Timer</strong> block on any setup screen — tap a preset chip, or type any custom duration (5–600 seconds) into the "Custom" field. The change only applies to that game session; the recommended default shown next to the switch never changes.
 </details>
 
 ---

@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  const CLUE_SECONDS = 12;
   const AWARD_POINTS = 10;
   const MAX_TEAMS = 6;
 
@@ -11,7 +10,6 @@
     usedIndices: new Set(),
     currentSong: null,
     clueLevel: 1,
-    timerEnabled: true,
     songsPlayed: 0
   };
 
@@ -56,12 +54,17 @@
   teamScoreboard.addTeam("Team 1");
   teamScoreboard.addTeam("Team 2");
 
-  const timerToggle = document.getElementById("timer-toggle");
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per clue",
+    recommended: 12,
+    presets: [8, 12, 15, 20],
+    defaultEnabled: true
+  });
 
   btnStart.addEventListener("click", () => {
     state.pool = GUESSTHESONG_CATEGORIES[state.category];
     state.usedIndices = new Set();
-    state.timerEnabled = timerToggle.checked;
     state.songsPlayed = 0;
     document.getElementById("category-label").textContent = state.category;
     teamScoreboard.renderScoreboard();
@@ -72,7 +75,6 @@
   // ---------- Play ----------
   const clueListEl = document.getElementById("clue-list");
   const clueCountLabel = document.getElementById("clue-count-label");
-  const clueTimerEl = document.getElementById("clue-timer");
   const btnNextClue = document.getElementById("btn-next-clue");
   const btnRevealAnswer = document.getElementById("btn-reveal-answer");
   const answerBlock = document.getElementById("answer-block");
@@ -80,12 +82,8 @@
   const awardRow = document.getElementById("award-row");
   const btnNextSong = document.getElementById("btn-next-song");
 
-  const timer = createTimer({
-    seconds: CLUE_SECONDS,
-    onTick: (s) => {
-      clueTimerEl.textContent = `⏱️ ${s}s`;
-      clueTimerEl.classList.toggle("timer-urgent", s <= 4 && s > 0);
-    },
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
     onExpire: () => {
       if (state.clueLevel < state.currentSong.clues.length) {
         advanceClue();
@@ -108,11 +106,10 @@
   }
 
   function startClueTimer() {
-    if (state.timerEnabled) {
-      clueTimerEl.classList.remove("hidden");
-      timer.start();
+    if (timerSetup.isEnabled()) {
+      timer.start(timerSetup.getSeconds());
     } else {
-      clueTimerEl.classList.add("hidden");
+      timer.hide();
     }
   }
 
@@ -138,13 +135,12 @@
     startClueTimer();
   }
   btnNextClue.addEventListener("click", () => {
-    timer.stop();
+    timer.hide();
     advanceClue();
   });
 
   function revealAnswer() {
-    timer.stop();
-    clueTimerEl.classList.add("hidden");
+    timer.hide();
     state.songsPlayed++;
     answerTextEl.textContent = state.currentSong.answer;
     answerBlock.classList.remove("hidden");
@@ -170,7 +166,7 @@
 
   // ---------- Summary ----------
   function goToSummary() {
-    timer.stop();
+    timer.hide();
     document.getElementById("summary-text").textContent = `You made it through ${state.songsPlayed} song${state.songsPlayed === 1 ? "" : "s"}.`;
     const ranked = teamScoreboard.getTeams().slice().sort((a, b) => b.score - a.score);
     const medals = ["🥇", "🥈", "🥉"];

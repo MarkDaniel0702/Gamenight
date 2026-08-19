@@ -34,26 +34,28 @@ function pickRandomUnused(arr, usedIndexSet) {
   return { item: arr[idx], index: idx };
 }
 
-// A start/stop countdown timer. onTick(secondsLeft) fires every second
-// (including the initial call with the full duration); onExpire() fires
-// once when it hits zero.
+// A start/stop/pause/resume countdown timer. onTick(secondsLeft) fires every
+// second (including the initial call with the full duration); onExpire()
+// fires once when it hits zero. pause()/resume() preserve the remaining time
+// instead of resetting it, unlike stop()+start().
 function createTimer({ seconds, onTick, onExpire }) {
   let remaining = seconds;
   let handle = null;
+  function tick() {
+    remaining--;
+    if (remaining <= 0) {
+      if (onTick) onTick(0);
+      stop();
+      if (onExpire) onExpire();
+      return;
+    }
+    if (onTick) onTick(remaining);
+  }
   function start(customSeconds) {
     stop();
     remaining = customSeconds != null ? customSeconds : seconds;
     if (onTick) onTick(remaining);
-    handle = setInterval(() => {
-      remaining--;
-      if (remaining <= 0) {
-        if (onTick) onTick(0);
-        stop();
-        if (onExpire) onExpire();
-        return;
-      }
-      if (onTick) onTick(remaining);
-    }, 1000);
+    handle = setInterval(tick, 1000);
   }
   function stop() {
     if (handle) {
@@ -61,7 +63,167 @@ function createTimer({ seconds, onTick, onExpire }) {
       handle = null;
     }
   }
-  return { start, stop, get running() { return handle !== null; } };
+  function pause() {
+    stop();
+  }
+  function resume() {
+    if (handle || remaining <= 0) return;
+    handle = setInterval(tick, 1000);
+  }
+  return {
+    start,
+    stop,
+    pause,
+    resume,
+    getRemaining: () => remaining,
+    get running() { return handle !== null; }
+  };
+}
+
+// Renders the universal pre-game timer settings widget into `mount`: an
+// on/off switch, preset duration chips, and a custom numeric input. Every
+// game calls this once at setup and reads getSeconds()/isEnabled() when the
+// game actually starts. `presets` should include `recommended`.
+function createTimerSetup({ mount, unitLabel, recommended, presets, defaultEnabled }) {
+  const presetList = (presets && presets.length ? presets : [recommended]).filter((v, i, a) => a.indexOf(v) === i);
+  let seconds = recommended;
+  let enabled = defaultEnabled !== false;
+
+  mount.innerHTML = `
+    <div class="timer-setup">
+      <div class="timer-setup-head">
+        <label class="timer-switch">
+          <input type="checkbox" class="ts-enable" ${enabled ? "checked" : ""}>
+          <span class="ts-track"><span class="ts-thumb"></span></span>
+          <span class="ts-label">⏱️ Timer</span>
+        </label>
+        <span class="ts-recommended">Recommended: ${recommended}s ${unitLabel}</span>
+      </div>
+      <div class="ts-body${enabled ? "" : " hidden"}">
+        <div class="ts-presets">
+          ${presetList.map((p) => `<button type="button" class="ts-preset${p === seconds ? " selected" : ""}" data-s="${p}">${p}s</button>`).join("")}
+        </div>
+        <label class="ts-custom">
+          Custom
+          <input type="number" class="ts-custom-input" min="5" max="600" step="5" value="${seconds}">
+          <span>seconds</span>
+        </label>
+      </div>
+    </div>
+  `;
+
+  const enableInput = mount.querySelector(".ts-enable");
+  const body = mount.querySelector(".ts-body");
+  const presetBtns = Array.from(mount.querySelectorAll(".ts-preset"));
+  const customInput = mount.querySelector(".ts-custom-input");
+
+  function selectSeconds(s) {
+    if (!Number.isFinite(s)) return;
+    seconds = Math.max(5, Math.min(600, Math.round(s)));
+    customInput.value = seconds;
+    presetBtns.forEach((b) => b.classList.toggle("selected", Number(b.dataset.s) === seconds));
+  }
+
+  presetBtns.forEach((b) => {
+    b.addEventListener("click", () => selectSeconds(Number(b.dataset.s)));
+  });
+  customInput.addEventListener("input", () => {
+    if (customInput.value === "") return;
+    selectSeconds(Number(customInput.value));
+  });
+  customInput.addEventListener("blur", () => selectSeconds(seconds));
+
+  enableInput.addEventListener("change", () => {
+    enabled = enableInput.checked;
+    body.classList.toggle("hidden", !enabled);
+  });
+
+  return {
+    getSeconds: () => seconds,
+    isEnabled: () => enabled
+  };
+}
+
+// Builds the universal in-game timer HUD (countdown + Pause/Resume/Reset)
+// into `mount`, wrapping createTimer. warnFrac/urgentFrac are fractions of
+// the *started* duration so the warning stages scale with whatever custom
+// length the player picked, not a fixed second count.
+function createGameTimer({ mount, warnFrac, urgentFrac, showControls, onExpire }) {
+  const useControls = showControls !== false;
+  const warnFraction = warnFrac != null ? warnFrac : 0.5;
+  const urgentFraction = urgentFrac != null ? urgentFrac : 0.25;
+
+  mount.innerHTML = `
+    <div class="timer-hud hidden">
+      <span class="timer-value">⏱️ --s</span>
+      ${useControls ? `
+      <span class="timer-controls">
+        <button type="button" class="timer-ctrl ts-pause" aria-label="Pause timer">⏸️</button>
+        <button type="button" class="timer-ctrl ts-resume hidden" aria-label="Resume timer">▶️</button>
+        <button type="button" class="timer-ctrl ts-reset" aria-label="Reset timer">↺</button>
+      </span>` : ""}
+    </div>
+  `;
+
+  const hud = mount.querySelector(".timer-hud");
+  const valueEl = mount.querySelector(".timer-value");
+  const pauseBtn = mount.querySelector(".ts-pause");
+  const resumeBtn = mount.querySelector(".ts-resume");
+  const resetBtn = mount.querySelector(".ts-reset");
+
+  let lastSeconds = 0;
+
+  const timer = createTimer({
+    seconds: 0,
+    onTick: (s) => {
+      valueEl.textContent = `⏱️ ${s}s`;
+      const urgentAt = Math.max(2, Math.round(lastSeconds * urgentFraction));
+      const warnAt = Math.max(urgentAt + 1, Math.round(lastSeconds * warnFraction));
+      hud.classList.toggle("timer-urgent", s > 0 && s <= urgentAt);
+      hud.classList.toggle("timer-warn", s > 0 && s > urgentAt && s <= warnAt);
+    },
+    onExpire: () => {
+      if (pauseBtn) pauseBtn.classList.add("hidden");
+      if (resumeBtn) resumeBtn.classList.add("hidden");
+      if (onExpire) onExpire();
+    }
+  });
+
+  if (useControls) {
+    pauseBtn.addEventListener("click", () => {
+      timer.pause();
+      pauseBtn.classList.add("hidden");
+      resumeBtn.classList.remove("hidden");
+    });
+    resumeBtn.addEventListener("click", () => {
+      timer.resume();
+      resumeBtn.classList.add("hidden");
+      pauseBtn.classList.remove("hidden");
+    });
+    resetBtn.addEventListener("click", () => start(lastSeconds));
+  }
+
+  function start(seconds) {
+    lastSeconds = seconds;
+    hud.classList.remove("hidden", "timer-warn", "timer-urgent");
+    if (pauseBtn) pauseBtn.classList.remove("hidden");
+    if (resumeBtn) resumeBtn.classList.add("hidden");
+    timer.start(seconds);
+  }
+  function hide() {
+    timer.stop();
+    hud.classList.add("hidden");
+  }
+
+  return {
+    start,
+    stop: timer.stop,
+    pause: timer.pause,
+    resume: timer.resume,
+    reset: () => start(lastSeconds),
+    show: () => hud.classList.remove("hidden"),
+    hide
+  };
 }
 
 // Renders a grouped card picker (used for theme/category/prompt-set

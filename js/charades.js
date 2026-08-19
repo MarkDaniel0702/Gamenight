@@ -3,7 +3,6 @@
 
   const MIN_PLAYERS = 3;
   const MAX_PLAYERS = 10;
-  const TIMER_SECONDS = 60;
 
   const state = {
     category: null,
@@ -12,7 +11,6 @@
     names: [],
     scores: [],
     turnIndex: 0,
-    timerEnabled: true,
     currentWord: "",
     lastResult: ""
   };
@@ -28,7 +26,14 @@
   // ---------- Setup ----------
   const categoryGrid = document.getElementById("category-grid");
   const btnStart = document.getElementById("btn-start");
-  const timerToggle = document.getElementById("timer-toggle");
+
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per round",
+    recommended: 60,
+    presets: [30, 45, 60, 90],
+    defaultEnabled: true
+  });
 
   function makeCategoryCard(name) {
     const btn = document.createElement("button");
@@ -61,7 +66,6 @@
   validateSetup();
 
   btnStart.addEventListener("click", () => {
-    state.timerEnabled = timerToggle.checked;
     state.pool = CHARADES_CATEGORIES[state.category];
     state.usedIndices = new Set();
     state.names = roster.getNames();
@@ -89,14 +93,9 @@
   // ---------- Acting ----------
   const actorNameEl = document.getElementById("actor-name");
   const wordTextEl = document.getElementById("word-text");
-  const actTimerEl = document.getElementById("act-timer");
 
-  const timer = createTimer({
-    seconds: TIMER_SECONDS,
-    onTick: (s) => {
-      actTimerEl.textContent = `⏱️ ${s}s`;
-      actTimerEl.classList.toggle("timer-urgent", s <= 10 && s > 0);
-    },
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
     onExpire: () => finishTurn(`⏰ Time's up! The word was "${state.currentWord}".`)
   });
 
@@ -106,22 +105,21 @@
     actorNameEl.textContent = state.names[state.turnIndex];
     wordTextEl.textContent = item;
     showScreen("act");
-    if (state.timerEnabled) {
-      actTimerEl.classList.remove("hidden");
-      timer.start();
+    if (timerSetup.isEnabled()) {
+      timer.start(timerSetup.getSeconds());
     } else {
-      actTimerEl.classList.add("hidden");
+      timer.hide();
     }
   });
 
   document.getElementById("btn-correct").addEventListener("click", () => {
-    timer.stop();
+    timer.hide();
     state.scores[state.turnIndex] += 1;
     finishTurn(`✅ ${state.names[state.turnIndex]} got it! (+1 point)`);
   });
 
   document.getElementById("btn-skip").addEventListener("click", () => {
-    timer.stop();
+    timer.hide();
     finishTurn(`⏭️ Skipped "${state.currentWord}".`);
   });
 

@@ -58,6 +58,14 @@
   }
   validateSetup();
 
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per question",
+    recommended: 30,
+    presets: [15, 30, 45, 60],
+    defaultEnabled: false
+  });
+
   // ---------- Play ----------
   const voteStatus = document.getElementById("vote-status");
   const voteView = document.getElementById("vote-view");
@@ -85,10 +93,20 @@
     updateVoteStatus();
   }
 
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
+    onExpire: () => {
+      state.voteIndex++;
+      updateVoteStatus();
+    }
+  });
+
   function updateVoteStatus() {
+    timer.hide();
     const names = roster.getNames();
     if (state.voteIndex < names.length) {
       voteStatus.textContent = `🗳️ ${names[state.voteIndex]}, pick A or B!`;
+      if (timerSetup.isEnabled()) timer.start(timerSetup.getSeconds());
     } else {
       showResults();
     }
@@ -135,6 +153,7 @@
 
   // ---------- Summary ----------
   document.getElementById("btn-end-session").addEventListener("click", () => {
+    timer.hide();
     const n = state.questionsPlayed;
     document.getElementById("summary-text").textContent = `You made it through ${n} question${n === 1 ? "" : "s"}.`;
     showScreen("summary");

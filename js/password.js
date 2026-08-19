@@ -5,7 +5,6 @@
   const MAX_PLAYERS = 10;
   const MIN_CLUES = 3;
   const MAX_CLUES = 8;
-  const CLUE_SECONDS = 15;
 
   const state = {
     category: null,
@@ -16,7 +15,6 @@
     turnIndex: 0,
     maxClues: 5,
     cluesUsed: 0,
-    timerEnabled: true,
     currentWord: "",
     lastResult: ""
   };
@@ -77,7 +75,13 @@
   });
   renderCluesStepper();
 
-  const timerToggle = document.getElementById("timer-toggle");
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "per clue",
+    recommended: 15,
+    presets: [10, 15, 20, 30],
+    defaultEnabled: true
+  });
 
   function validateSetup() {
     btnStart.disabled = !state.category;
@@ -91,7 +95,6 @@
     state.scores = state.names.map(() => 0);
     state.turnIndex = 0;
     state.maxClues = maxCluesSetting;
-    state.timerEnabled = timerToggle.checked;
     state.lastResult = "";
     showScreen("pass");
     renderPass();
@@ -114,15 +117,10 @@
   // ---------- Clue giving ----------
   const wordTextEl = document.getElementById("word-text");
   const clueStatusEl = document.getElementById("clue-status");
-  const clueTimerEl = document.getElementById("clue-timer");
   const btnNextClue = document.getElementById("btn-next-clue");
 
-  const timer = createTimer({
-    seconds: CLUE_SECONDS,
-    onTick: (s) => {
-      clueTimerEl.textContent = `⏱️ ${s}s`;
-      clueTimerEl.classList.toggle("timer-urgent", s <= 5 && s > 0);
-    },
+  const timer = createGameTimer({
+    mount: document.getElementById("game-timer"),
     onExpire: () => {
       if (state.cluesUsed < state.maxClues) {
         giveNextClue();
@@ -138,11 +136,10 @@
   }
 
   function startClueTimer() {
-    if (state.timerEnabled) {
-      clueTimerEl.classList.remove("hidden");
-      timer.start();
+    if (timerSetup.isEnabled()) {
+      timer.start(timerSetup.getSeconds());
     } else {
-      clueTimerEl.classList.add("hidden");
+      timer.hide();
     }
   }
 
@@ -165,14 +162,14 @@
   btnNextClue.addEventListener("click", giveNextClue);
 
   document.getElementById("btn-got-it").addEventListener("click", () => {
-    timer.stop();
+    timer.hide();
     const points = Math.max(state.maxClues - state.cluesUsed + 1, 1);
     state.scores[state.turnIndex] += points;
     finishTurn(`✅ Guessed after ${state.cluesUsed} clue${state.cluesUsed === 1 ? "" : "s"}! +${points} pts`);
   });
 
   function giveUp() {
-    timer.stop();
+    timer.hide();
     finishTurn(`The word was "${state.currentWord}".`);
   }
   document.getElementById("btn-give-up").addEventListener("click", giveUp);

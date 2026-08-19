@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spy Word &mdash; Game Night</title>
+<title>Spy Word &mdash; Blunt Rotation</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕵️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Special+Elite&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/spy.css">
+<link rel="stylesheet" href="css/timer.css">
 </head>
 <body>
 
@@ -16,7 +17,7 @@
 <div class="spotlight" id="spotlight"></div>
 
 <header class="topbar">
-  <a href="index.html" class="back-link">&larr; Game Night</a>
+  <a href="index.html" class="back-link">&larr; Blunt Rotation</a>
   <span class="topbar-title">🕵️ SPY WORD</span>
 </header>
 
@@ -59,10 +60,8 @@
     </div>
 
     <div class="block">
-      <label class="timer-toggle">
-        <input type="checkbox" id="timer-toggle" checked>
-        <span>⏱️ Add a 90-second discussion timer</span>
-      </label>
+      <h2 class="block-label">4. Timer</h2>
+      <div id="timer-setup"></div>
     </div>
 
     <button type="button" id="btn-start" class="btn-primary" disabled>Deal the Words &rarr;</button>
@@ -95,7 +94,7 @@
     <span class="big-icon">🗣️</span>
     <h1 class="screen-title">Everyone Has Their Word</h1>
     <p class="screen-sub">Take turns describing your word without saying it. Discuss and vote &mdash; who sounds like they don't actually know it?</p>
-    <p id="discuss-timer" class="discuss-timer hidden">⏱️ <span id="discuss-timer-value">90</span>s left to discuss</p>
+    <div id="game-timer" class="timer-mount"></div>
     <button type="button" id="btn-reveal-spy" class="btn-primary">Reveal the Spy</button>
   </section>
 
@@ -113,6 +112,7 @@
 
 </main>
 
+<script src="js/shared.js"></script>
 <script src="js/data-spy.js"></script>
 <script src="js/spy.js"></script>
 </body>

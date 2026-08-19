@@ -3,7 +3,7 @@
 
   const MIN_PLAYERS = 3;
   const MAX_PLAYERS = 10;
-  const DISCUSSION_SECONDS = 90;
+  const DISCUSSION_RECOMMENDED = 60;
 
   const state = {
     theme: null,
@@ -13,9 +13,7 @@
     mainWord: "",
     spyWord: "",
     spyIndex: -1,
-    revealIndex: 0,
-    timerEnabled: true,
-    timerHandle: null
+    revealIndex: 0
   };
 
   const screens = {
@@ -159,10 +157,15 @@
     state.revealIndex = 0;
   }
 
-  const timerToggle = document.getElementById("timer-toggle");
+  const timerSetup = createTimerSetup({
+    mount: document.getElementById("timer-setup"),
+    unitLabel: "for discussion",
+    recommended: DISCUSSION_RECOMMENDED,
+    presets: [30, 45, 60, 90],
+    defaultEnabled: true
+  });
 
   btnStart.addEventListener("click", () => {
-    state.timerEnabled = timerToggle.checked;
     dealWords();
     showScreen("pass");
     renderPass();
@@ -226,36 +229,23 @@
   const spyWordReveal = document.getElementById("spy-word-reveal");
   const btnPlayAgain = document.getElementById("btn-play-again");
   const btnNewGame = document.getElementById("btn-new-game");
-  const discussTimerEl = document.getElementById("discuss-timer");
-  const discussTimerValueEl = document.getElementById("discuss-timer-value");
+  const discussTimer = createGameTimer({
+    mount: document.getElementById("game-timer"),
+    onExpire: () => {
+      btnRevealSpy.classList.add("btn-urgent");
+    }
+  });
 
   function stopDiscussionTimer() {
-    if (state.timerHandle) {
-      clearInterval(state.timerHandle);
-      state.timerHandle = null;
-    }
+    discussTimer.hide();
     btnRevealSpy.classList.remove("btn-urgent");
   }
 
   function startDiscussionTimer() {
     stopDiscussionTimer();
-    if (!state.timerEnabled) {
-      discussTimerEl.classList.add("hidden");
-      return;
+    if (timerSetup.isEnabled()) {
+      discussTimer.start(timerSetup.getSeconds());
     }
-    let secondsLeft = DISCUSSION_SECONDS;
-    discussTimerEl.classList.remove("hidden");
-    discussTimerValueEl.textContent = secondsLeft;
-    state.timerHandle = setInterval(() => {
-      secondsLeft--;
-      if (secondsLeft <= 0) {
-        stopDiscussionTimer();
-        discussTimerEl.textContent = "⏰ Time's up! Ready to vote?";
-        btnRevealSpy.classList.add("btn-urgent");
-        return;
-      }
-      discussTimerValueEl.textContent = secondsLeft;
-    }, 1000);
   }
 
   btnRevealSpy.addEventListener("click", () => {

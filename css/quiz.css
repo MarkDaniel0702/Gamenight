@@ -247,20 +247,6 @@ button{font-family:inherit;border:none;cursor:pointer;}
 
 #btn-show-answer{margin-bottom:1.2rem;}
 
-.q-timer{
-  display:inline-block;
-  font-family:var(--font-display);
-  font-size:0.85rem;
-  color:var(--teal);
-  border:1px solid rgba(49,224,201,0.35);
-  border-radius:999px;
-  padding:0.3em 0.8em;
-  margin:0 0 1rem 0.6rem;
-  vertical-align:middle;
-}
-.q-timer.q-timer-urgent{color:#ff6b6b;border-color:rgba(255,107,107,0.5);animation:pulseTimer 1s ease infinite;}
-@keyframes pulseTimer{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
-
 /* How to Play */
 .how-to-play{
   max-width:640px;margin:0 auto 2rem;

@@ -138,16 +138,12 @@ button{font-family:inherit;border:none;cursor:pointer;}
 .score-btn{width:20px;height:16px;background:var(--panel-2);border:1px solid var(--border);color:var(--paper-dim);font-size:0.65rem;line-height:1;border-radius:4px;display:flex;align-items:center;justify-content:center;}
 .score-btn:hover{color:var(--accent-2);border-color:var(--accent-2);}
 
+/* Generic checkbox + label row (e.g. Categories' elimination-mode toggle) */
+.toggle-check{display:flex;align-items:center;gap:0.6rem;font-size:0.9rem;font-weight:700;color:var(--paper);cursor:pointer;}
+.toggle-check input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;}
+
 /* Turn banner */
 .turn-banner{text-align:center;font-weight:800;font-size:1rem;color:var(--paper);margin:0 0 1.2rem;}
-
-/* Timer badge */
-.timer-badge{
-  display:inline-block;font-family:var(--font-display);font-size:1.1rem;color:var(--accent-2);
-  border:1px solid rgba(255,184,77,0.35);border-radius:999px;padding:0.35em 0.9em;
-}
-.timer-badge.timer-urgent{color:#ff6b6b;border-color:rgba(255,107,107,0.5);animation:pulseTimer 1s ease infinite;}
-@keyframes pulseTimer{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
 
 /* Buttons */
 .btn-primary{
@@ -197,10 +193,6 @@ button{font-family:inherit;border:none;cursor:pointer;}
 .pass-title{font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--paper-dim);font-weight:700;margin:0 0 0.6rem;}
 .pass-name{font-family:var(--font-display);font-size:clamp(1.8rem,6vw,2.6rem);color:var(--accent-2);margin:0 0 1.2rem;word-break:break-word;}
 .pass-hint{color:var(--paper-dim);font-size:0.9rem;margin:0 0 1.8rem;line-height:1.6;}
-
-/* Timer toggle checkbox */
-.timer-toggle{display:flex;align-items:center;gap:0.6rem;font-size:0.9rem;font-weight:700;color:var(--paper);cursor:pointer;}
-.timer-toggle input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;}
 
 /* Reveal card (secret word / character / clue) */
 .reveal-card{

@@ -14,6 +14,5 @@
   font-size:clamp(1.1rem,3.5vw,1.5rem);color:var(--accent-2);
   margin:0 0 0.6rem;
 }
-#round-timer{display:block;text-align:center;margin:0 0 1rem;}
 .cat-card{padding:2.2rem 2rem;}
 .cat-secondary-actions{margin-top:1rem;}
