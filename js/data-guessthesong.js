@@ -1,3 +1,4 @@
+// Guess the Song: each round reveals three progressively specific clues (an
 // emoji rebus, a description, then an artist/era hint). A song can also
 // carry an optional YouTube clip — `youtubeId` (the video ID), plus optional
 // `clipStart`/`clipDuration` in seconds to bound the playable snippet. When
