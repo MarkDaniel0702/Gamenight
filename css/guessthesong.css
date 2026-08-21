@@ -21,6 +21,13 @@
 .song-reveal-btn{max-width:640px;margin:0.8rem auto 1.5rem;display:block;}
 .song-end{max-width:200px;margin:1.5rem auto 0;display:block;}
 
+.point-badge{
+  display:block;text-align:center;margin:0 auto 1.2rem;font-family:var(--font-display);
+  font-size:0.85rem;letter-spacing:0.04em;color:var(--ink);
+  background:linear-gradient(120deg, var(--accent-2), #8fefff);
+  border-radius:999px;padding:0.4rem 1rem;max-width:fit-content;
+}
+
 /* Optional YouTube clip player — audio-only (no title/thumbnail) until the
    answer is revealed, then it expands into a normal video frame. */
 .clip-player{position:relative;overflow:hidden;max-width:520px;margin:1.2rem auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:1rem 1.1rem;}

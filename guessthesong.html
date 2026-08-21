@@ -25,7 +25,7 @@
   <!-- SETUP -->
   <section id="screen-setup" class="screen active">
     <h1 class="screen-title">Guess the Song</h1>
-    <p class="screen-sub">No audio needed &mdash; and no host needed either. Clues reveal automatically until someone shouts the answer.</p>
+    <p class="screen-sub">Play the clip, or skip straight to the clues &mdash; no host needed either way. From 118 songs across 11 categories, spanning OPM to hip-hop to K-pop.</p>
 
     <details class="how-to-play">
       <summary>❓ How does this work?</summary>
@@ -33,7 +33,8 @@
         <li>Pick a category and add teams (optional &mdash; skip scoring if you just want to play for fun), then tap <strong>Start</strong>.</li>
         <li>An emoji clue appears first. Shout the song the moment you know it!</li>
         <li>More clues reveal over time &mdash; a description, then an artist/era hint &mdash; getting easier as it goes.</li>
-        <li>Tap <strong>Reveal Answer</strong> anytime, award the point to whoever got it, and move on.</li>
+        <li>Tap <strong>Reveal Answer</strong> anytime, award that song's points (100&ndash;500, harder songs are worth more) to whoever got it, and move on.</li>
+        <li>Songs with a 🎧 clip available can be played right in the browser &mdash; audio only until the answer's revealed, then the full video unlocks.</li>
       </ol>
     </details>
 
@@ -60,6 +61,7 @@
   <section id="screen-play" class="screen">
     <div id="scoreboard" class="scoreboard"></div>
     <p class="cat-banner">🎵 <span id="category-label">OPM</span></p>
+    <span id="point-value-badge" class="point-badge">💰 100 PTS</span>
     <div id="game-timer" class="timer-mount"></div>
 
     <div class="reveal-card song-card">

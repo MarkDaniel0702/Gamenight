@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  const AWARD_POINTS = 10;
   const MAX_TEAMS = 6;
 
   const state = {
@@ -253,6 +252,7 @@
   // ---------- Play ----------
   const clueListEl = document.getElementById("clue-list");
   const clueCountLabel = document.getElementById("clue-count-label");
+  const pointValueBadge = document.getElementById("point-value-badge");
   const btnNextClue = document.getElementById("btn-next-clue");
   const btnRevealAnswer = document.getElementById("btn-reveal-answer");
   const answerBlock = document.getElementById("answer-block");
@@ -297,6 +297,7 @@
     state.clueLevel = 1;
     renderClues();
     setupClipPlayer(item);
+    pointValueBadge.textContent = `💰 ${item.pointValue} PTS`;
 
     answerBlock.classList.add("hidden");
     awardRow.classList.add("hidden");
@@ -328,14 +329,15 @@
     btnRevealAnswer.classList.add("hidden");
     btnNextSong.classList.remove("hidden");
 
+    const points = state.currentSong.pointValue;
     const teams = teamScoreboard.getTeams();
     awardRow.innerHTML = "";
     teams.forEach((team, i) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "award-btn";
-      btn.innerHTML = `<span class="sw" style="background:${team.color}"></span> +${AWARD_POINTS} ${team.name}`;
-      btn.addEventListener("click", () => teamScoreboard.award(i, AWARD_POINTS));
+      btn.innerHTML = `<span class="sw" style="background:${team.color}"></span> +${points} ${team.name}`;
+      btn.addEventListener("click", () => teamScoreboard.award(i, points));
       awardRow.appendChild(btn);
     });
     awardRow.classList.remove("hidden");
