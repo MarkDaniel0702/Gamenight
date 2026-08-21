@@ -9,14 +9,17 @@
     usedIndices: new Set(),
     currentSong: null,
     clueLevel: 1,
-    songsPlayed: 0
+    songsPlayed: 0,
+    themeComplete: false,
+    maxScore: 0
   };
 
   const screens = {
     setup: document.getElementById("screen-setup"),
     play: document.getElementById("screen-play"),
     summary: document.getElementById("screen-summary"),
-    tiebreak: document.getElementById("screen-tiebreak")
+    tiebreak: document.getElementById("screen-tiebreak"),
+    themeComplete: document.getElementById("screen-theme-complete")
   };
   const showScreen = createScreenManager(screens);
 
@@ -66,6 +69,8 @@
     state.pool = GUESSTHESONG_CATEGORIES[state.category];
     state.usedIndices = new Set();
     state.songsPlayed = 0;
+    state.themeComplete = false;
+    state.maxScore = state.pool.reduce((sum, song) => sum + song.pointValue, 0);
     document.getElementById("category-label").textContent = state.category;
     teamScoreboard.renderScoreboard();
     showScreen("play");
@@ -344,7 +349,73 @@
   }
   btnRevealAnswer.addEventListener("click", revealAnswer);
 
-  btnNextSong.addEventListener("click", pickSong);
+  function checkThemeComplete() {
+    return state.usedIndices.size === state.pool.length;
+  }
+
+  function goToThemeComplete() {
+    timer.hide();
+    destroyClipPlayer();
+    state.themeComplete = true;
+
+    const message = `You've completed all ${state.pool.length} song${state.pool.length === 1 ? "" : "s"} in this theme!`;
+    document.getElementById("theme-complete-message").textContent = message;
+
+    const statsHtml = `
+      <div class="stat-item">
+        <span class="stat-label">Theme</span>
+        <span class="stat-value">${state.category}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Songs Completed</span>
+        <span class="stat-value">${state.songsPlayed} / ${state.pool.length}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Maximum Possible</span>
+        <span class="stat-value">${state.maxScore} pts</span>
+      </div>
+    `;
+    document.getElementById("theme-complete-stats").innerHTML = statsHtml;
+
+    resolveSession({
+      entrants: teamScoreboard.getTeams(),
+      mount: document.getElementById("tiebreak-mount"),
+      onEnter: () => showScreen("tiebreak"),
+      onResolved: (result) => {
+        renderThemeScores(result);
+        showScreen("themeComplete");
+      }
+    });
+  }
+
+  function renderThemeScores(result) {
+    const medals = ["🥇", "🥈", "🥉"];
+    const themeScores = document.getElementById("theme-complete-scores");
+    themeScores.innerHTML = "";
+    result.ranked.forEach((team, i) => {
+      const row = document.createElement("div");
+      row.className = "result-row";
+      if (result.winner === team && team.score > 0) row.classList.add("result-winner");
+      row.innerHTML = `<span class="result-medal">${medals[i] || "🎗️"}</span><span class="result-swatch" style="background:${team.color}"></span><span class="result-name">${team.name}</span><span class="result-score">${team.score} pts</span>`;
+      themeScores.appendChild(row);
+    });
+    if (result.tiebreak) {
+      const note = document.createElement("p");
+      note.className = "screen-sub";
+      note.textContent = result.shared
+        ? "The tie held — the group agreed to share the win."
+        : `Tie-breaker settled it in ${result.tiebreak.rounds} round${result.tiebreak.rounds === 1 ? "" : "s"}.`;
+      themeScores.appendChild(note);
+    }
+  }
+
+  btnNextSong.addEventListener("click", () => {
+    if (checkThemeComplete()) {
+      goToThemeComplete();
+    } else {
+      pickSong();
+    }
+  });
 
   // ---------- Summary ----------
   function goToSummary() {
@@ -388,6 +459,7 @@
   document.getElementById("btn-play-again").addEventListener("click", () => {
     state.usedIndices = new Set();
     state.songsPlayed = 0;
+    state.themeComplete = false;
     teamScoreboard.resetScores();
     showScreen("play");
     pickSong();
@@ -395,6 +467,23 @@
 
   document.getElementById("btn-new-game").addEventListener("click", () => {
     state.category = null;
+    document.querySelectorAll(".theme-btn").forEach((b) => b.classList.remove("selected"));
+    validateSetup();
+    showScreen("setup");
+  });
+
+  document.getElementById("btn-restart-theme").addEventListener("click", () => {
+    state.usedIndices = new Set();
+    state.songsPlayed = 0;
+    state.themeComplete = false;
+    teamScoreboard.resetScores();
+    showScreen("play");
+    pickSong();
+  });
+
+  document.getElementById("btn-new-theme").addEventListener("click", () => {
+    state.category = null;
+    state.themeComplete = false;
     document.querySelectorAll(".theme-btn").forEach((b) => b.classList.remove("selected"));
     validateSetup();
     showScreen("setup");
