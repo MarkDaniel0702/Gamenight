@@ -1,6 +1,10 @@
-// Guess the Song: since this is a static site with no audio playback, each
-// round reveals three progressively specific clues (an emoji rebus, a
-// description, then an artist/era hint) instead of an audio clip.
+// emoji rebus, a description, then an artist/era hint). A song can also
+// carry an optional YouTube clip — `youtubeId` (the video ID), plus optional
+// `clipStart`/`clipDuration` in seconds to bound the playable snippet. When
+// present, guessthesong.js lets players play the clip (audio only, no
+// title/thumbnail) during the clue phase, then reveals the full video once
+// the answer is shown. Songs without a `youtubeId` play exactly as before —
+// the clip feature is entirely optional per question.
 const GUESSTHESONG_CATEGORIES = {
   "OPM": [
     { clues: ["👶😢🙏", "A father's heartfelt ballad about a wayward child — one of the most famous OPM songs ever, later translated into over 20 languages.", "Artist: Freddie Aguilar (1978)"], answer: "Anak — Freddie Aguilar" },
@@ -15,7 +19,7 @@ const GUESSTHESONG_CATEGORIES = {
   "K-Pop": [
     { clues: ["✨🕺🎆", "An upbeat disco-pop English-language hit that topped the Billboard Hot 100 in 2020.", "Artist: BTS"], answer: "Dynamite — BTS" },
     { clues: ["🔫💥👑", "A fierce, bass-heavy hit whose title mimics the sound of gunfire.", "Artist: BLACKPINK"], answer: "DDU-DU DDU-DU — BLACKPINK" },
-    { clues: ["🐴💃😎", "A viral 2012 hit famous for its horse-riding dance, one of YouTube's first billion-view videos.", "Artist: PSY"], answer: "Gangnam Style — PSY" },
+    { clues: ["🐴💃😎", "A viral 2012 hit famous for its horse-riding dance, one of YouTube's first billion-view videos.", "Artist: PSY"], answer: "Gangnam Style — PSY", youtubeId: "9bZkp7q19f0", clipStart: 47, clipDuration: 20 },
     { clues: ["💣❤️‍🔥👊", "A powerful anthem about ending a toxic relationship, with a booming trumpet intro.", "Artist: BLACKPINK"], answer: "Kill This Love — BLACKPINK" },
     { clues: ["🧈😎🕶️", "A smooth, funky English-language single described as going down 'smooth like butter'.", "Artist: BTS"], answer: "Butter — BTS" },
     { clues: ["🔥👑💅", "An energetic comeback anthem that broke YouTube premiere records in 2020.", "Artist: BLACKPINK"], answer: "How You Like That — BLACKPINK" },
@@ -26,14 +30,14 @@ const GUESSTHESONG_CATEGORIES = {
     { clues: ["🌃🚗💡", "An 80s-inspired synth-pop hit, one of the best-performing Billboard Hot 100 songs of all time.", "Artist: The Weeknd"], answer: "Blinding Lights — The Weeknd" },
     { clues: ["💃❤️🎤", "One of the best-selling digital singles ever, from the album ÷ (Divide).", "Artist: Ed Sheeran"], answer: "Shape of You — Ed Sheeran" },
     { clues: ["😈🦷🖤", "A dark, whisper-vocal pop hit that helped its teenage singer sweep the 2020 Grammys.", "Artist: Billie Eilish"], answer: "Bad Guy — Billie Eilish" },
-    { clues: ["🕺🎺😎", "A funk-revival smash hit pairing a Grammy-winning producer with a Hawaiian-born singer.", "Artists: Mark Ronson feat. Bruno Mars"], answer: "Uptown Funk — Mark Ronson ft. Bruno Mars" },
+    { clues: ["🕺🎺😎", "A funk-revival smash hit pairing a Grammy-winning producer with a Hawaiian-born singer.", "Artists: Mark Ronson feat. Bruno Mars"], answer: "Uptown Funk — Mark Ronson ft. Bruno Mars", youtubeId: "OPf0YbXqDm0", clipStart: 15, clipDuration: 20 },
     { clues: ["🚀💃🌙", "A disco-pop hit from the album 'Future Nostalgia'.", "Artist: Dua Lipa"], answer: "Levitating — Dua Lipa" },
     { clues: ["🍉🌞😊", "A sunny, feel-good hit from a former boy-band member's solo album 'Fine Line'.", "Artist: Harry Styles"], answer: "Watermelon Sugar — Harry Styles" },
     { clues: ["🌊💔🔥", "A soulful breakup anthem from the album '21' that won Record of the Year.", "Artist: Adele"], answer: "Rolling in the Deep — Adele" },
     { clues: ["☀️😄👏", "An upbeat, feel-good hit from the 'Despicable Me 2' soundtrack.", "Artist: Pharrell Williams"], answer: "Happy — Pharrell Williams" }
   ],
   "Rock": [
-    { clues: ["🎭🎹🎸", "A genre-defying six-minute rock opera, famously featured in a biopic of the same band.", "Artist: Queen"], answer: "Bohemian Rhapsody — Queen" },
+    { clues: ["🎭🎹🎸", "A genre-defying six-minute rock opera, famously featured in a biopic of the same band.", "Artist: Queen"], answer: "Bohemian Rhapsody — Queen", youtubeId: "fJ9rUzIMcZQ", clipStart: 168, clipDuration: 20 },
     { clues: ["🧴😤🎸", "The song that helped bring grunge music into the mainstream in 1991.", "Artist: Nirvana"], answer: "Smells Like Teen Spirit — Nirvana" },
     { clues: ["🌹👧🎸", "Known for its iconic opening guitar riff, from the album 'Appetite for Destruction'.", "Artist: Guns N' Roses"], answer: "Sweet Child O' Mine — Guns N' Roses" },
     { clues: ["😴👹🎸", "A heavy metal anthem about nightmares, one of the band's most recognizable songs.", "Artist: Metallica"], answer: "Enter Sandman — Metallica" },

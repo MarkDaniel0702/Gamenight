@@ -73,6 +73,183 @@
     pickSong();
   });
 
+  // ---------- Optional YouTube clip player ----------
+  // Loads the official YouTube IFrame Player API on first use. During the
+  // clue phase the player is mounted but visually hidden (1px, opacity 0) so
+  // audio can play without exposing the title, thumbnail, or video frame —
+  // only custom Play/Pause/Replay controls are shown. At reveal time the
+  // frame expands into a normal video player. Songs without a `youtubeId`
+  // never touch any of this — the clip-player element stays hidden.
+  let ytApiPromise = null;
+  function loadYouTubeAPI() {
+    if (window.YT && window.YT.Player) return Promise.resolve(window.YT);
+    if (ytApiPromise) return ytApiPromise;
+    ytApiPromise = new Promise((resolve) => {
+      const prevReady = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (typeof prevReady === "function") prevReady();
+        resolve(window.YT);
+      };
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      tag.onerror = () => { ytApiPromise = null; };
+      document.head.appendChild(tag);
+    });
+    return ytApiPromise;
+  }
+
+  const clipPlayerEl = document.getElementById("clip-player");
+  const clipFrameMount = document.getElementById("clip-yt-mount");
+  const clipBadge = document.getElementById("clip-badge");
+  const btnClipPlay = document.getElementById("btn-clip-play");
+  const btnClipPause = document.getElementById("btn-clip-pause");
+  const btnClipReplay = document.getElementById("btn-clip-replay");
+  const clipFallback = document.getElementById("clip-fallback");
+  const clipProgress = document.getElementById("clip-progress");
+  const clipProgressFill = document.getElementById("clip-progress-fill");
+
+  let ytPlayer = null;
+  let clipWatchdog = null;
+  let clipLoadToken = 0; // guards against a slow API load landing after the song changed
+
+  function stopClipWatchdog() {
+    if (clipWatchdog) {
+      clearInterval(clipWatchdog);
+      clipWatchdog = null;
+    }
+  }
+
+  function setClipControlsEnabled(enabled) {
+    btnClipPlay.disabled = !enabled;
+    btnClipReplay.disabled = !enabled;
+  }
+
+  function destroyClipPlayer() {
+    clipLoadToken++;
+    stopClipWatchdog();
+    if (ytPlayer) {
+      try { ytPlayer.destroy(); } catch (e) { /* already gone */ }
+      ytPlayer = null;
+    }
+    clipFrameMount.innerHTML = "";
+    clipPlayerEl.classList.add("hidden");
+    clipPlayerEl.dataset.state = "compact";
+    clipFallback.classList.add("hidden");
+    clipBadge.classList.remove("hidden");
+    btnClipPlay.classList.remove("hidden");
+    btnClipPause.classList.add("hidden");
+    btnClipReplay.classList.remove("hidden");
+    btnClipPlay.textContent = "⏳ Loading…";
+    setClipControlsEnabled(false);
+    clipProgress.classList.add("hidden");
+    clipProgressFill.style.width = "0%";
+  }
+
+  function startClipWatchdog(song) {
+    stopClipWatchdog();
+    if (!song.clipDuration) return;
+    const start = song.clipStart || 0;
+    const end = start + song.clipDuration;
+    clipWatchdog = setInterval(() => {
+      if (!ytPlayer || typeof ytPlayer.getCurrentTime !== "function") return;
+      const t = ytPlayer.getCurrentTime();
+      if (t >= end) {
+        ytPlayer.pauseVideo();
+        ytPlayer.seekTo(start, true);
+        clipProgressFill.style.width = "0%";
+        stopClipWatchdog();
+      } else {
+        const frac = Math.max(0, Math.min(1, (t - start) / song.clipDuration));
+        clipProgressFill.style.width = `${frac * 100}%`;
+      }
+    }, 250);
+  }
+
+  function setupClipPlayer(song) {
+    destroyClipPlayer();
+    if (!song.youtubeId) return;
+
+    const token = clipLoadToken;
+    clipPlayerEl.classList.remove("hidden");
+    clipProgress.classList.toggle("hidden", !song.clipDuration);
+
+    loadYouTubeAPI().then((YT) => {
+      if (token !== clipLoadToken) return; // song moved on while the API was loading
+      const mountEl = document.createElement("div");
+      clipFrameMount.appendChild(mountEl);
+      const start = song.clipStart || 0;
+      ytPlayer = new YT.Player(mountEl, {
+        videoId: song.youtubeId,
+        playerVars: {
+          start,
+          controls: 0,
+          disablekb: 1,
+          modestbranding: 1,
+          rel: 0,
+          iv_load_policy: 3,
+          fs: 0,
+          playsinline: 1
+        },
+        events: {
+          onReady: () => {
+            if (token !== clipLoadToken) return;
+            btnClipPlay.textContent = "▶️ Play";
+            setClipControlsEnabled(true);
+            // Handles the rare case where the answer was revealed before this
+            // (slow) API/player load finished — catch the frame up to match.
+            const answerBlockEl = document.getElementById("answer-block");
+            if (answerBlockEl && !answerBlockEl.classList.contains("hidden")) {
+              clipPlayerEl.dataset.state = "revealed";
+            }
+          },
+          onError: () => {
+            if (token !== clipLoadToken) return;
+            // Owner disabled embedding, video removed, etc. — fall back
+            // gracefully instead of leaving a broken/blank player.
+            clipPlayerEl.classList.remove("hidden");
+            clipPlayerEl.dataset.state = "compact";
+            clipFallback.classList.remove("hidden");
+            btnClipPlay.classList.add("hidden");
+            btnClipPause.classList.add("hidden");
+            btnClipReplay.classList.add("hidden");
+            clipBadge.classList.add("hidden");
+            clipProgress.classList.add("hidden");
+          },
+          onStateChange: (e) => {
+            if (token !== clipLoadToken) return;
+            if (e.data === YT.PlayerState.PLAYING) {
+              btnClipPlay.classList.add("hidden");
+              btnClipPause.classList.remove("hidden");
+              startClipWatchdog(song);
+            } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+              btnClipPlay.classList.remove("hidden");
+              btnClipPause.classList.add("hidden");
+              if (e.data === YT.PlayerState.ENDED) stopClipWatchdog();
+            }
+          }
+        }
+      });
+    });
+  }
+
+  function revealClipPlayer() {
+    if (!state.currentSong || !state.currentSong.youtubeId || !ytPlayer) return;
+    clipPlayerEl.dataset.state = "revealed";
+  }
+
+  btnClipPlay.addEventListener("click", () => {
+    if (ytPlayer && typeof ytPlayer.playVideo === "function") ytPlayer.playVideo();
+  });
+  btnClipPause.addEventListener("click", () => {
+    if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo();
+  });
+  btnClipReplay.addEventListener("click", () => {
+    if (!ytPlayer) return;
+    const start = (state.currentSong && state.currentSong.clipStart) || 0;
+    ytPlayer.seekTo(start, true);
+    ytPlayer.playVideo();
+  });
+
   // ---------- Play ----------
   const clueListEl = document.getElementById("clue-list");
   const clueCountLabel = document.getElementById("clue-count-label");
@@ -119,6 +296,7 @@
     state.currentSong = item;
     state.clueLevel = 1;
     renderClues();
+    setupClipPlayer(item);
 
     answerBlock.classList.add("hidden");
     awardRow.classList.add("hidden");
@@ -145,6 +323,7 @@
     state.songsPlayed++;
     answerTextEl.textContent = state.currentSong.answer;
     answerBlock.classList.remove("hidden");
+    revealClipPlayer();
     btnNextClue.classList.add("hidden");
     btnRevealAnswer.classList.add("hidden");
     btnNextSong.classList.remove("hidden");
@@ -168,6 +347,7 @@
   // ---------- Summary ----------
   function goToSummary() {
     timer.hide();
+    destroyClipPlayer();
     document.getElementById("summary-text").textContent = `You made it through ${state.songsPlayed} song${state.songsPlayed === 1 ? "" : "s"}.`;
     resolveSession({
       entrants: teamScoreboard.getTeams(),

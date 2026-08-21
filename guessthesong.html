@@ -67,6 +67,24 @@
       <div id="clue-list" class="clue-list"></div>
     </div>
 
+    <div id="clip-player" class="clip-player hidden" data-state="compact">
+      <div class="clip-frame-wrap">
+        <div id="clip-yt-mount" class="clip-yt-mount"></div>
+      </div>
+      <div class="clip-controls-bar">
+        <span id="clip-badge" class="clip-badge">🎧 Clip available</span>
+        <div class="clip-btns">
+          <button type="button" id="btn-clip-play" class="clip-btn" disabled>⏳ Loading…</button>
+          <button type="button" id="btn-clip-pause" class="clip-btn hidden">⏸️ Pause</button>
+          <button type="button" id="btn-clip-replay" class="clip-btn" disabled>↺ Replay</button>
+        </div>
+        <div id="clip-progress" class="clip-progress hidden">
+          <div id="clip-progress-fill" class="clip-progress-fill"></div>
+        </div>
+      </div>
+      <p id="clip-fallback" class="clip-fallback hidden">🔇 This clip can't play here — no worries, keep going with the clues!</p>
+    </div>
+
     <div id="answer-block" class="answer-block hidden">
       <span class="a-label">Answer</span>
       <p class="a-text" id="answer-text">Song — Artist</p>

@@ -20,3 +20,38 @@
 
 .song-reveal-btn{max-width:640px;margin:0.8rem auto 1.5rem;display:block;}
 .song-end{max-width:200px;margin:1.5rem auto 0;display:block;}
+
+/* Optional YouTube clip player — audio-only (no title/thumbnail) until the
+   answer is revealed, then it expands into a normal video frame. */
+.clip-player{position:relative;overflow:hidden;max-width:520px;margin:1.2rem auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:1rem 1.1rem;}
+
+/* The iframe itself always keeps a real, non-zero pixel size — YouTube's
+   player needs an actual rendering surface to initialize playback, and
+   shrinking it to ~0px (rather than just moving it off-screen) leaves it
+   stuck unable to play even after being resized back up later. So instead
+   of shrinking the iframe, the wrap is moved off-screen while compact. */
+.clip-frame-wrap{
+  position:absolute;left:-9999px;top:-9999px;width:480px;height:270px;
+  overflow:hidden;opacity:0;pointer-events:none;transition:opacity 0.3s ease;
+}
+.clip-player[data-state="revealed"] .clip-frame-wrap{
+  position:relative;left:0;top:0;width:100%;height:auto;aspect-ratio:16/9;opacity:1;pointer-events:auto;
+  border-radius:12px;overflow:hidden;margin-bottom:0.9rem;border:1px solid var(--border);background:#000;
+}
+.clip-yt-mount{width:100%;height:100%;}
+.clip-yt-mount iframe{display:block;width:100%;height:100%;border:0;}
+
+.clip-controls-bar{display:flex;align-items:center;flex-wrap:wrap;gap:0.7rem;}
+.clip-badge{font-size:0.78rem;font-weight:800;color:var(--accent-2);background:rgba(255,61,154,0.12);border:1px solid rgba(255,61,154,0.3);border-radius:999px;padding:0.3rem 0.7rem;white-space:nowrap;}
+.clip-player[data-state="revealed"] .clip-badge{display:none;}
+.clip-btns{display:flex;gap:0.5rem;}
+.clip-btn{background:var(--panel-2);border:1px solid var(--border);color:var(--paper);font-weight:700;font-size:0.82rem;padding:0.5rem 0.9rem;border-radius:10px;transition:border-color 0.2s;}
+.clip-btn:hover:not(:disabled){border-color:var(--accent);}
+.clip-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.clip-progress{flex:1 1 100%;height:6px;background:var(--panel-2);border-radius:999px;overflow:hidden;}
+.clip-progress-fill{height:100%;width:0%;background:linear-gradient(90deg, var(--accent), var(--accent-2));transition:width 0.2s linear;}
+.clip-fallback{margin:0.8rem 0 0;color:var(--paper-dim);font-size:0.85rem;text-align:center;}
+
+@media (max-width:480px){
+  .clip-controls-bar{justify-content:center;}
+}
