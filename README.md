@@ -5,14 +5,14 @@
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-none-blue">
   <img alt="No accounts" src="https://img.shields.io/badge/sign--up-not%20required-blue">
   <img alt="Host optional" src="https://img.shields.io/badge/host-optional-orange">
-  <img alt="Games" src="https://img.shields.io/badge/games-11-purple">
+  <img alt="Games" src="https://img.shields.io/badge/games-12-purple">
   <img alt="Spy Word themes" src="https://img.shields.io/badge/spy%20word%20themes-57-e8324f">
   <img alt="Quiz Night themes" src="https://img.shields.io/badge/quiz%20night%20themes-17-ffcb3c">
   <img alt="Quiz Night questions" src="https://img.shields.io/badge/quiz%20night%20questions-975-ffcb3c">
   <img alt="Customizable timers" src="https://img.shields.io/badge/timers-customizable-2fd67f">
 </p>
 
-A colorful, browser-based party game platform — **11 games**, one shared screen, **no dedicated host required**. Gather a group around a phone, tablet, or laptop and pick from social deduction, trivia, voting games, and classic party favorites. The app handles turns, customizable timers, randomization, hidden information, and results on its own.
+A colorful, browser-based party game platform — **12 games**, one shared screen, **no dedicated host required**. Gather a group around a phone, tablet, or laptop and pick from social deduction, trivia, voting games, and classic party favorites. The app handles turns, customizable timers, randomization, hidden information, and results on its own.
 
 > [!TIP]
 > **▶️ Play now:** [markdaniel0702.github.io/PARTY-PILOT](https://markdaniel0702.github.io/PARTY-PILOT/) — free, no sign-up, works on any device. See [🌐 Deployment](#-deployment) below for hosting details.
@@ -28,7 +28,7 @@ A colorful, browser-based party game platform — **11 games**, one shared scree
 |---|---|
 | 🙅 **No host required** | Every game runs itself — turn order, timers, hidden info, and results all happen automatically. |
 | 🎙️ **Game Master optional** | Prefer a human running the show for the games where that helps? Several have a manual mode too. |
-| 🎲 **11 games, 3 categories** | Word & Deduction, Trivia & Knowledge, and Party & Voting — something for every group. |
+| 🎲 **12 games, 3 categories** | Word & Deduction, Trivia & Knowledge, and Party & Voting — something for every group. |
 | 🎨 **Deep theme libraries** | 57 Spy Word themes, 17 Quiz Night themes, plus curated category sets for every other game. |
 | ⏱️ **Universal customizable timers** | Every game shares one timer system — a recommended duration you can override with a preset or a custom value, Start/Pause/Resume/Reset controls, and a switch to turn it off entirely where a timer isn't required. |
 | 🏁 **Automatic results** | Boards, votes, and scoreboards resolve themselves the moment a round finishes. |
@@ -46,6 +46,7 @@ A colorful, browser-based party game platform — **11 games**, one shared scree
 | 🤔 [Who Am I?](#-who-am-i) | Word & Deduction | 3–10 | ✅ | ✅ |
 | 🔐 [Password](#-password) | Word & Deduction | 2–10 | ✅ | ✅ |
 | 🧠 [Categories](#-categories) | Word & Deduction | 2–10 | ✅ | — |
+| 🟩 [Word Grid](#-word-grid) | Word & Deduction | 2–10 | ✅ | — |
 | ❓ [Quiz Night](#-quiz-night) | Trivia & Knowledge | 1–6 teams | ✅ | ✅ |
 | 🎵 [Guess the Song](#-guess-the-song) | Trivia & Knowledge | Any group | ✅ | — |
 | 🖼️ [Picture Guess](#️-picture-guess) | Trivia & Knowledge | Any group | ✅ | — |
@@ -105,7 +106,7 @@ Once triggered, a bonus tile locks and reads **⭐ USED**, just like an answered
 
 ## ⚔️ Final Tie-Breaker
 
-Every game with final scores — Quiz Night, Charades, Password, Two Truths and a Lie, Guess the Song, and Picture Guess — automatically checks for a tie the moment the game ends, before the results screen appears.
+Every game with final scores — Quiz Night, Charades, Password, Word Grid, Two Truths and a Lie, Guess the Song, and Picture Guess — automatically checks for a tie the moment the game ends, before the results screen appears.
 
 - **No tie? No interruption.** A single leader goes straight to the results screen, exactly as before.
 - **Tied for first?** Only the tied entrants move on to a **⚔️ Tie-Breaker** screen — everyone else's final placement is already locked in.
@@ -168,6 +169,20 @@ Classic rapid-fire: a random category appears, and players take turns naming som
 - A timer runs per turn (10s recommended, customizable, can be switched off); the group self-referees with **Nailed It!** / **Stuck or Repeated**.
 - **🎯 Elimination Mode** (default) knocks a stuck player out — last one standing wins. Turn it off for a casual, no-pressure round.
 - **🔄 New Category** anytime, or **🏁 End Round** whenever the group's had enough.
+
+---
+
+## 🟩 Word Grid
+
+A Wordle-style word-guessing round, adapted from a standalone single-player prototype into a full pass-and-play party game. The app secretly deals the word — nobody has to type one in or know it ahead of time.
+
+- Categories: Animals, Food & Drink, Movies & Shows, Sports & Games, Nature & Places, Everyday Life.
+- Each turn, the app privately picks a word for whoever's holding the device, and the board resizes to fit it automatically (no fixed 5-letter limit).
+- Type a full-length guess and tap **Guess** — tiles flip to reveal 🟩 right letter/right spot, 🟨 right letter/wrong spot, or ⬛ not in the word, including correct handling of repeated letters.
+- Set a configurable guess limit (4–8) at setup — fewer guesses used means more points when you land the word.
+- **🤖 Automated:** a timer per guess (45s recommended, customizable). Running out of time just skips that guess instead of ending the round, so nobody gets stuck. **Turn it off** for a self-paced round.
+- **🏳️ Give Up** ends your turn early and reveals the word if the group would rather move on.
+- Turn order rotates automatically, with running scores shown at the end.
 
 ---
 
@@ -268,6 +283,7 @@ During play, the timer appears as a countdown badge with **Pause**, **Resume**, 
 | 🤔 Who Am I? | per player | 120s | ✅ |
 | 🔐 Password | per clue | 15s | ✅ |
 | 🧠 Categories | per turn | 10s | ✅ |
+| 🟩 Word Grid | per guess | 45s | ✅ |
 | 🎭 Charades | per round | 60s | ✅ |
 | 🎵 Guess the Song | per clue reveal | 12s | ✅ |
 | 🖼️ Picture Guess | per sharpen step | 4s | ✅ |
@@ -404,15 +420,15 @@ GitHub Pages was chosen over these because it needs no new third-party account a
 Gamenight/
 ├── index.html                Homepage — grouped "Choose Your Game" screen
 ├── spy.html / quiz.html      The two original flagship games
-├── whoami.html, password.html, categories.html,
+├── whoami.html, password.html, categories.html, wordgrid.html,
 │   guessthesong.html, pictureguess.html, twotruths.html,
 │   wouldurather.html, mostlikely.html, charades.html
-│                              The nine party games — one page each
+│                              The ten party games — one page each
 ├── css/
 │   ├── style.css             Homepage design
 │   ├── spy.css / quiz.css    Spy Word / Quiz Night styles (bespoke themes)
 │   ├── party.css             Shared component styles for the 9 party games
-│   ├── timer.css             Universal timer widget styles, loaded by all 11 games
+│   ├── timer.css             Universal timer widget styles, loaded by all 12 games
 │   └── <game>.css            Each party game's own palette + small bespoke touches
 ├── js/
 │   ├── spy.js / quiz.js      Spy Word / Quiz Night logic
@@ -423,7 +439,7 @@ Gamenight/
 └── README.md                 You are here
 ```
 
-**`js/shared.js`** is what keeps all 11 games consistent without duplicating code — every game loads it, including Spy Word and Quiz Night — and provides:
+**`js/shared.js`** is what keeps all 12 games consistent without duplicating code — every game loads it, including Spy Word and Quiz Night — and provides:
 
 | Helper | What it does |
 |---|---|
@@ -509,7 +525,7 @@ Add it to `QUIZ_THEME_GROUPS` the same way as Spy Word. Themes with more than 5 
 <details>
 <summary><strong>🎲 Add content to any other game</strong></summary>
 
-The other nine games use much simpler, flat data files — no nested point structure. Open the matching `js/data-<game>.js` and follow the existing pattern for that file: a category name mapped to an array of items (character names for Who Am I?, word pairs or word lists, emoji + answer pairs for Picture Guess, etc.). Every one of them is a plain JavaScript object literal, so copy an existing entry and change the words.
+The other ten games use much simpler, flat data files — no nested point structure. Open the matching `js/data-<game>.js` and follow the existing pattern for that file: a category name mapped to an array of items (character names for Who Am I?, word pairs or word lists, emoji + answer pairs for Picture Guess, etc.). Every one of them is a plain JavaScript object literal, so copy an existing entry and change the words.
 
 </details>
 
