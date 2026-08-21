@@ -141,7 +141,7 @@ const GUESSTHESONG_CATEGORIES = {
     { clues: ["🤖👼🌆", "One of the most iconic anime opening themes ever, for a mecha series about teenage pilots.", "From: Neon Genesis Evangelion"], answer: "Cruel Angel's Thesis — Neon Genesis Evangelion", pointValue: 300, youtubeId: "wqmv96HJan8", clipStart: 30, clipDuration: 20 },
     { clues: ["🏰⚔️🦖", "A dramatic opening theme for an anime about humanity fighting giant humanoid Titans.", "From: Attack on Titan"], answer: "Guren no Yumiya — Attack on Titan", pointValue: 300, youtubeId: "2B6nj38AdD0", clipStart: 30, clipDuration: 20 },
     { clues: ["👻⚔️🩸", "An opening theme known for its unique animated dance sequence, for a modern sorcerer anime.", "Artist: Eve — From: Jujutsu Kaisen"], answer: "Kaikai Kitan — Eve (Jujutsu Kaisen)", pointValue: 200, youtubeId: "isY3rtuSsK8", clipStart: 30, clipDuration: 20 },
-    { clues: ["⚡🐭🎒", "The English theme song of a globally beloved monster-catching franchise.", "From: Pokémon (English dub theme)"], answer: "Pokémon Theme — Pokémon", pointValue: 100, youtubeId: "2zMIddjFAIA", clipStart: 12, clipDuration: 15 }
+    { clues: ["⚡🐭🎒", "The English theme song of a globally beloved monster-catching franchise.", "From: Pokémon (English dub theme)"], answer: "Pokémon Theme — Pokémon", pointValue: 100, youtubeId: "JuYeHPFR3f0", clipStart: 12, clipDuration: 15 }
   ],
   "2000s Music": [
     { clues: ["💔🎸😤", "A pop-rock breakup anthem by the first-ever American Idol winner.", "Artist: Kelly Clarkson (2004)"], answer: "Since U Been Gone — Kelly Clarkson", pointValue: 100, youtubeId: "R7UrFYvl5TE", clipStart: 35, clipDuration: 20 },
