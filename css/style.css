@@ -74,7 +74,7 @@ button{font-family:inherit;}
   margin:0 0 1.1rem;
   letter-spacing:0.01em;
 }
-.home-title .line{display:block;}
+.home-title .line{display:inline-block;}
 .line-1{
   color:var(--paper);
   animation:fadeUp 0.7s ease 0.05s both;

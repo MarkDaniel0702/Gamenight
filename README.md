@@ -1,4 +1,4 @@
-# 🎮 Blunt Rotation Party Night
+# 🎮 B-Rotation Party Night
 
 <p>
   <img alt="No build step" src="https://img.shields.io/badge/build-none-brightgreen">
@@ -336,7 +336,7 @@ Each remaining game has its own curated category list — see that game's sectio
 
 ## ⚙️ Installation
 
-Blunt Rotation Party Night has **zero dependencies and no build step** — it's plain HTML, CSS, and JavaScript.
+B-Rotation Party Night has **zero dependencies and no build step** — it's plain HTML, CSS, and JavaScript.
 
 ```bash
 # Just get the files — nothing to install
