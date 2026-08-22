@@ -10,17 +10,46 @@
 }
 
 .picture-frame{
-  max-width:420px;height:260px;margin:0 auto 1.5rem;
+  position:relative;
+  width:100%;max-width:480px;aspect-ratio:4/3;margin:0 auto 1.5rem;
   background:linear-gradient(165deg, var(--panel-2), var(--panel));
   border:1px solid rgba(34,197,255,0.3);border-radius:24px;
   display:flex;align-items:center;justify-content:center;
   overflow:hidden;
 }
-.picture-emoji{
-  font-size:6.5rem;
+
+.picture-image{
+  width:100%;height:100%;object-fit:cover;display:block;
   transition:filter 0.6s ease;
   filter:blur(20px);
 }
 
+.picture-loading{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem;
+  color:var(--paper-dim);font-weight:700;letter-spacing:0.02em;
+}
+.picture-spinner{
+  width:2.5rem;height:2.5rem;border-radius:50%;
+  border:4px solid rgba(238,247,251,0.15);
+  border-top-color:var(--accent);
+  animation:pictureSpin 0.9s linear infinite;
+}
+@keyframes pictureSpin{to{transform:rotate(360deg);}}
+
+.picture-fallback{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6rem;
+  padding:0 1.5rem;text-align:center;
+}
+.picture-fallback-emoji{
+  font-size:5.5rem;
+  transition:filter 0.6s ease;
+  filter:blur(20px);
+}
+.picture-fallback-text{color:var(--paper-dim);font-weight:700;font-size:0.9rem;}
+
 .song-reveal-btn{max-width:640px;margin:0.8rem auto 1.5rem;display:block;}
 .song-end{max-width:200px;margin:1.5rem auto 0;display:block;}
+
+@media (max-width:480px){
+  .picture-frame{aspect-ratio:1/1;}
+}

@@ -31,7 +31,7 @@
       <summary>❓ How does this work?</summary>
       <ol>
         <li>Pick a category and add teams (optional &mdash; skip scoring if you just want to play for fun), then tap <strong>Start</strong>.</li>
-        <li>A blurry emoji picture appears. Shout your guess the moment you know it!</li>
+        <li>A blurry real photo appears. Shout your guess the moment you know it!</li>
         <li>The picture sharpens on its own over time &mdash; or tap <strong>Sharpen</strong> to speed it up.</li>
         <li>Tap <strong>Reveal Answer</strong> anytime, award the point, and move to the next picture.</li>
       </ol>
@@ -62,8 +62,16 @@
     <p class="cat-banner">🖼️ <span id="category-label">Places</span></p>
     <div id="game-timer" class="timer-mount"></div>
 
-    <div class="picture-frame">
-      <span id="picture-emoji" class="picture-emoji">🗼</span>
+    <div class="picture-frame" id="picture-frame">
+      <div id="picture-loading" class="picture-loading">
+        <span class="picture-spinner" aria-hidden="true"></span>
+        <span>Loading picture&hellip;</span>
+      </div>
+      <img id="picture-image" class="picture-image hidden" alt="Guess the picture" draggable="false">
+      <div id="picture-fallback" class="picture-fallback hidden">
+        <span id="picture-fallback-emoji" class="picture-fallback-emoji">🖼️</span>
+        <span class="picture-fallback-text">Picture unavailable &mdash; guess from the vibes!</span>
+      </div>
     </div>
 
     <div id="answer-block" class="answer-block hidden">

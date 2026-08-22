@@ -75,7 +75,10 @@
   });
 
   // ---------- Play ----------
-  const pictureEmojiEl = document.getElementById("picture-emoji");
+  const pictureLoadingEl = document.getElementById("picture-loading");
+  const pictureImageEl = document.getElementById("picture-image");
+  const pictureFallbackEl = document.getElementById("picture-fallback");
+  const pictureFallbackEmojiEl = document.getElementById("picture-fallback-emoji");
   const btnSharpen = document.getElementById("btn-sharpen");
   const btnRevealAnswer = document.getElementById("btn-reveal-answer");
   const answerBlock = document.getElementById("answer-block");
@@ -88,8 +91,67 @@
     onExpire: () => sharpen()
   });
 
+  // ---------- Wikipedia thumbnail lookup ----------
+  // Resolves a `wikiTitle` to a real, currently-live photo via Wikipedia's
+  // free REST API (CORS-enabled, no API key needed) instead of hardcoding
+  // hotlinked image URLs that could rot if a file gets renamed. Results are
+  // cached in-memory so revisiting a picture (Play Again, etc.) never
+  // re-fetches.
+  const thumbCache = new Map();
+  let pictureLoadToken = 0;
+
+  function fetchWikiThumbnail(title) {
+    if (thumbCache.has(title)) return Promise.resolve(thumbCache.get(title));
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+    return fetch(url)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const src = (data && data.thumbnail && data.thumbnail.source) || null;
+        thumbCache.set(title, src);
+        return src;
+      })
+      .catch(() => null);
+  }
+
+  function showFallback() {
+    pictureLoadingEl.classList.add("hidden");
+    pictureImageEl.classList.add("hidden");
+    pictureImageEl.removeAttribute("src");
+    pictureFallbackEmojiEl.textContent = state.currentPic.emoji;
+    pictureFallbackEl.classList.remove("hidden");
+  }
+
+  function loadPicture(item) {
+    const token = ++pictureLoadToken;
+    pictureLoadingEl.classList.remove("hidden");
+    pictureImageEl.classList.add("hidden");
+    pictureFallbackEl.classList.add("hidden");
+    pictureImageEl.removeAttribute("src");
+
+    fetchWikiThumbnail(item.wikiTitle).then((src) => {
+      if (token !== pictureLoadToken) return; // a later picture already loaded
+      if (!src) {
+        showFallback();
+        return;
+      }
+      pictureImageEl.onload = () => {
+        if (token !== pictureLoadToken) return;
+        pictureLoadingEl.classList.add("hidden");
+        pictureImageEl.classList.remove("hidden");
+      };
+      pictureImageEl.onerror = () => {
+        if (token !== pictureLoadToken) return;
+        showFallback();
+      };
+      pictureImageEl.alt = `Guess the picture: ${state.category || ""}`.trim();
+      pictureImageEl.src = src;
+    });
+  }
+
   function applyBlur() {
-    pictureEmojiEl.style.filter = `blur(${BLUR_STEPS[state.revealLevel]}px)`;
+    const blurCss = `blur(${BLUR_STEPS[state.revealLevel]}px)`;
+    pictureImageEl.style.filter = blurCss;
+    pictureFallbackEmojiEl.style.filter = blurCss;
     btnSharpen.disabled = state.revealLevel >= BLUR_STEPS.length - 1;
   }
 
@@ -105,7 +167,7 @@
     const { item } = pickRandomUnused(state.pool, state.usedIndices);
     state.currentPic = item;
     state.revealLevel = 0;
-    pictureEmojiEl.textContent = item.emoji;
+    loadPicture(item);
     applyBlur();
 
     answerBlock.classList.add("hidden");

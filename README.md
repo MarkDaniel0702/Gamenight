@@ -34,7 +34,7 @@ A colorful, browser-based party game platform — **12 games**, one shared scree
 | 🏁 **Automatic results** | Boards, votes, and scoreboards resolve themselves the moment a round finishes. |
 | ⚔️ **Automatic tie-breaker** | A tied final score triggers a random tie-breaker challenge for just the tied entrants, looping until one winner remains — or accept a shared win instead. |
 | 📱 **Fully responsive** | Works on a laptop, tablet, or phone passed around a table. |
-| 🔒 **Private by design** | No accounts, no server, nothing leaves your browser. |
+| 🔒 **Private by design** | No accounts, no server. The only outbound calls are public, anonymous lookups — Google Fonts on first visit and Wikipedia photo lookups during Picture Guess — nothing personal ever leaves your browser. |
 
 ---
 
@@ -198,11 +198,71 @@ Since this is a static site with no audio hosting, songs are guessed through **p
 
 ## 🖼️ Picture Guess
 
-Since this is a static site with no image hosting (and no way to license real photos of celebrities, logos, or movie stills), each round shows a large **emoji picture** that starts blurry and sharpens into focus over time.
+Each round shows a real photo — not an emoji — that starts blurry and sharpens into focus over time. The photo is hidden behind a blur filter until someone shouts the answer or the group taps **Reveal Answer**.
 
-- Categories: Places, Food, Animals, Movies, Anime, Celebrities, Philippine Locations, Logos.
-- **🤖 Automated:** the picture sharpens a step on a timer (4s recommended, customizable). Tap **🔍 Sharpen** anytime to speed it up manually.
-- Optional team scoring, same as Guess the Song.
+### ✨ Features
+
+- **Real embedded images**, one per question, fetched live and shown at full quality once sharpened — not an emoji standing in for the subject.
+- **Progressive blur/sharpen**, exactly like before: four blur steps from heavily blurred to fully clear, advancing on a timer or a manual **🔍 Sharpen** tap.
+- **Responsive image frame** — a fixed-aspect-ratio box (4:3 on desktop/tablet, 1:1 on narrow phones) with `object-fit: cover`, so every photo fills the frame without stretching or squashing on any screen size.
+- **Loading state** — a spinner plays while a picture's photo is being fetched, so the frame never shows a blank flash.
+- **Graceful fallback** — if a photo can't be fetched or fails to load, the round automatically falls back to that question's decorative emoji (still blurred/sharpened the same way) instead of breaking or freezing.
+- Scoring, timers, randomization, and themes are unchanged from before — see below.
+
+### 🎯 How to Play
+
+1. Pick a category and add teams (optional — skip scoring to just play for fun), then tap **Start**.
+2. A blurry real photo appears. Shout your guess the moment you know it!
+3. **🤖 Automated:** the picture sharpens a step on a timer (4s recommended, customizable). Tap **🔍 Sharpen** anytime to speed it up manually.
+4. Tap **💡 Reveal Answer** anytime — the answer stays completely hidden until then — award the point, and move to the next picture.
+
+### 🗂️ Categories
+
+Places, Food, Animals, Movies, Anime, Celebrities, Philippine Locations, Logos.
+
+### 🖼️ Image Sources
+
+This is a static site with no image hosting or CDN of its own, so instead of hardcoding hotlinked image URLs (which break the moment a file gets renamed or deleted), each question stores a **`wikiTitle`** — the exact Wikipedia article title for its subject — in `js/data-pictureguess.js`. At play time, `js/pictureguess.js` resolves that title to that article's current lead photo via Wikipedia's free, CORS-enabled REST API:
+
+```
+https://en.wikipedia.org/api/rest_v1/page/summary/<title>
+```
+
+No API key, backend, or build step is required — it's a plain `fetch()` from the browser. Images returned this way are Wikimedia Commons media, displayed the same way Wikipedia itself displays them (public domain or CC BY-SA licensed photos for most subjects; official logos on their respective company/brand articles). Results are cached in memory per session, so replaying a picture (e.g. **Play Again**) never re-fetches it.
+
+**Data structure**, per question in `PICTUREGUESS_CATEGORIES`:
+
+```js
+{ emoji: "🗼", answer: "Eiffel Tower (Paris)", wikiTitle: "Eiffel Tower" }
+```
+
+| Field | Purpose |
+|---|---|
+| `emoji` | Decorative only — used as the category-card icon and as the **fallback** picture if a real photo can't be loaded. Never the primary clue anymore. |
+| `answer` | The text revealed on **💡 Reveal Answer**. |
+| `wikiTitle` | The Wikipedia article title used to look up a real photo at play time. Must match an actual article title exactly (check on wikipedia.org first if unsure). |
+
+### ➕ Adding New Image Questions
+
+Open `js/data-pictureguess.js` and add an entry to any category (or start a new one):
+
+```js
+"Your Category": [
+  { emoji: "🎯", answer: "Your Answer", wikiTitle: "Exact Wikipedia Article Title" }
+  // add as many as you like — one is picked at random each round
+],
+```
+
+Then add an icon for it in `PICTUREGUESS_CATEGORY_ICONS`. Double-check the `wikiTitle` resolves to a real article with a lead photo (visit `https://en.wikipedia.org/wiki/<Your_Title>` and confirm it has an infobox image) — if it doesn't, that question just falls back to its `emoji` at play time instead of erroring out.
+
+### ⚙️ Configuration
+
+Same knobs as every other party game — see [🛠️ Customization](#️-customization): `MAX_TEAMS` and the timer's `recommended`/`presets`/`defaultEnabled` live near the top of `js/pictureguess.js`.
+
+### 🐛 Troubleshooting
+
+- **A picture never loads, just shows the emoji fallback** — either the group is offline (the Wikipedia fetch needs internet, same as loading the Google Fonts), or that question's `wikiTitle` doesn't match a real Wikipedia article. The round isn't broken either way — the emoji fallback still blurs/sharpens/scores exactly the same.
+- **A picture looks cropped oddly** — the frame uses `object-fit: cover` to fill its box without stretching, which can crop the edges of a very wide or tall source photo. This only affects framing, never the subject's recognizability at full sharpness.
 
 ---
 
@@ -358,7 +418,7 @@ python -m http.server 8000
 npx serve .
 ```
 
-No accounts, backend, or internet connection are required to play — the only thing that needs the internet is loading the Google Fonts on first visit.
+No accounts or backend are required to play. An internet connection is needed for two things: loading the Google Fonts on first visit, and fetching each Picture Guess photo from Wikipedia during that game — everything else works fully offline, and Picture Guess itself degrades gracefully to its emoji fallback if a photo can't be fetched.
 
 ---
 
@@ -525,7 +585,7 @@ Add it to `QUIZ_THEME_GROUPS` the same way as Spy Word. Themes with more than 5 
 <details>
 <summary><strong>🎲 Add content to any other game</strong></summary>
 
-The other ten games use much simpler, flat data files — no nested point structure. Open the matching `js/data-<game>.js` and follow the existing pattern for that file: a category name mapped to an array of items (character names for Who Am I?, word pairs or word lists, emoji + answer pairs for Picture Guess, etc.). Every one of them is a plain JavaScript object literal, so copy an existing entry and change the words.
+The other ten games use much simpler, flat data files — no nested point structure. Open the matching `js/data-<game>.js` and follow the existing pattern for that file: a category name mapped to an array of items (character names for Who Am I?, word pairs or word lists, `wikiTitle` + answer pairs for Picture Guess — see [➕ Adding New Image Questions](#-adding-new-image-questions), etc.). Every one of them is a plain JavaScript object literal, so copy an existing entry and change the words.
 
 </details>
 
@@ -603,4 +663,4 @@ Ideas for anyone who wants to keep building on this project:
 - 🌗 A light/dark theme toggle
 - 🎚️ Difficulty filters (e.g. "easy mode" using only 100–300 point Quiz Night questions)
 - 📤 A shareable results screen at the end of any game
-- 🎤 Real audio clips for Guess the Song and real images for Picture Guess, if a backend/CDN is ever added
+- 🎤 Real audio clips for Guess the Song, if a backend/CDN is ever added
